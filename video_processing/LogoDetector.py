@@ -3,6 +3,8 @@ import constant
 import cv2
 from PIL import Image
 from matplotlib import pyplot as plt
+import collections
+
 
 class LogoDetector(object):
     """docstring for LogoDetector."""
@@ -104,18 +106,22 @@ class LogoDetector(object):
         #     return;
 
         # subtract
-        if(i < 0 or j < 0 or i >= self.n or j >= self.m or self.vis[i][j] or self.shaded[i][j] == 0):
-            return;
+        queue = collections.deque()
+        queue.append([i,j])
+        while queue:
+            i, j = queue.popleft()
+            if(i < 0 or j < 0 or i >= self.n or j >= self.m or self.vis[i][j] == 1 or self.shaded[i][j] == 0):
+                continue
 
-        self.minI = np.minimum(self.minI, i)
-        self.maxI = np.maximum(self.maxI, i)
-        self.minJ = np.minimum(self.minJ, j)
-        self.maxJ = np.maximum(self.maxJ, j)
-        self.vis[i][j] = 1;
-        self.getShadedArea(i+1, j)
-        self.getShadedArea(i-1, j)
-        self.getShadedArea(i, j+1)
-        self.getShadedArea(i, j-1)
+            self.minI = np.minimum(self.minI, i)
+            self.maxI = np.maximum(self.maxI, i)
+            self.minJ = np.minimum(self.minJ, j)
+            self.maxJ = np.maximum(self.maxJ, j)
+            self.vis[i][j] = 1;
+            queue.append([i+1, j])
+            queue.append([i-1, j])
+            queue.append([i, j+1])
+            queue.append([i, j-1])
 
 
 
@@ -125,7 +131,6 @@ class LogoDetector(object):
             return -1, -1, -1, -1, []
 
         self.getZeroAreaSub()
-
 
         maxArea = -np.Inf
         x1 = y1 = x2 = y2 = -1
