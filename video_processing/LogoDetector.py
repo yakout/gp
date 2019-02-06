@@ -144,6 +144,7 @@ class LogoDetector(object):
                         y2 = self.maxJ
                         maxArea = area
                         print("max area:", maxArea)
+                        # print(x1, " ", y1, " ", x2, " ", y2)
 
         logo = np.zeros((self.n, self.m, 3)) # it can also be of size(x2-x1, y2-y1) but for simplicity
 
@@ -153,11 +154,21 @@ class LogoDetector(object):
             for x in range(x1, x2+1):
                 for y in range(y1, y2+1):
                     nonZero += not np.all(diff[x][y] == 0)
+
             if nonZero <= constant.LOGO_DIFF_THRESHOLD*maxArea:
                 logo = self.captured_frames[i]
                 break
 
         img = Image.fromarray(logo, 'RGB')
         img.show()
+
+        # temp = logo
+        # for x in range(x1, x2+1):
+        #     for y in range(y1, y2+1):
+        #         temp[x][y] = [0, 0, 0]
+        #
+        #
+        # img = Image.fromarray(temp, 'RGB')
+        # img.show()
 
         return x1, y1, x2, y2, logo # we need also a value for comparing
