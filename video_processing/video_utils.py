@@ -3,6 +3,8 @@ import config
 import constant
 import numpy as np
 from LogoDetector import LogoDetector
+from Logo import Logo
+from matplotlib import pyplot as plt
 
 def getCapturedFrames(video_filename):
     """Extract frames from video"""
@@ -26,5 +28,13 @@ def getCapturedFrames(video_filename):
 file_path = config.PATH + "Egypt v Uruguay - 2018 FIFA World Cup Russia™ - MATCH 2.mp4"
 captured_frames = getCapturedFrames(file_path)
 logoDetector = LogoDetector(captured_frames)
-x1, y1, x2, y2, logo = logoDetector.detectLogo()
-print(x1, " ", y1, " ", x2, " ", y2)
+x1, y1, x2, y2, img = logoDetector.detectLogo()
+logo = Logo(x1, y1, x2, y2, img)
+
+for img in captured_frames:
+    if(logo.hasLogo(img)):
+        plt.imshow(img, interpolation='nearest')
+        plt.show()
+
+
+print(logo.x1, " ", logo.y1, " ", logo.x2, " ", logo.y2)

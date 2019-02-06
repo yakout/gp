@@ -77,28 +77,21 @@ class LogoDetector(object):
         self.shaded = np.zeros((self.n, self.m))
         for i in range(self.n):
             for j in range(self.m):
-                self.shaded[i][j] = np.all(sum[i][j] <= (2000.0))
+                self.shaded[i][j] = np.all(sum[i][j] <= (constant.FRAME_SUBTRACTION_THRESHOLD))
                 if self.shaded[i][j] == 0:
                     img[i][j] = [0, 0, 0]
 
-        cv2.imshow("a7a", img)
-
+        # cv2.imshow("a7a", img)
+        #
         # plt.imshow(img, interpolation='nearest')
         # plt.show()
         #
-        img = Image.fromarray(img, 'RGB')
-        img.show()
+        # img = Image.fromarray(img, 'RGB')
+        # img.show()
 
         # print(self.shaded)
         print("return sub")
         return
-
-    # msh 3arf optimally tt3aml ezay el 7ta dy
-    minI = np.Inf
-    maxI = -np.Inf
-    minJ = np.Inf
-    maxJ = -np.Inf
-    vis = np.zeros((n, m))
 
     def getShadedArea(self, i, j):
         # xor
@@ -138,23 +131,33 @@ class LogoDetector(object):
         for i in range(self.n):
             for j in range(self.m):
                 if(self.vis[i][j] == 0):
-                    self.minI = np.Inf
-                    self.maxI = -np.Inf
-                    self.minJ = np.Inf
-                    self.maxJ = -np.Inf
+                    self.minI = constant.INF
+                    self.maxI = -constant.INF
+                    self.minJ = constant.INF
+                    self.maxJ = -constant.INF
                     self.getShadedArea(i, j)
-                    if(self.maxI >= 0 and self.maxJ >= 0 and (self.maxI-self.minI)*(self.maxJ-self.minJ) > maxArea):
+                    area = (self.maxI-self.minI+1)*(self.maxJ-self.minJ+1)
+                    if(self.maxI >= 0 and self.maxJ >= 0 and area > maxArea):
                         x1 = self.minI
                         y1 = self.minJ
                         x2 = self.maxI
                         y2 = self.maxJ
-                        maxArea = (self.maxI-self.minI)*(self.maxJ-self.minJ)
+                        maxArea = area
                         print("max area:", maxArea)
 
-        avgLogoVal = np.zeros((self.n, self.m, 3)) # it can also be of size(x2-x1, y2-y1) but for simplicity
+        logo = np.zeros((self.n, self.m, 3)) # it can also be of size(x2-x1, y2-y1) but for simplicity
 
-        for img in self.captured_frames:
-            avgLogoVal += img/len(self.captured_frames)
+        for i in range(1, len(self.captured_frames)):
+            diff = self.captured_frames[i] - self.captured_frames[i-1]
+            nonZero = 0
+            for x in range(x1, x2+1):
+                for y in range(y1, y2+1):
+                    nonZero += not np.all(diff[x][y] == 0)
+            if nonZero <= constant.LOGO_DIFF_THRESHOLD*maxArea:
+                logo = self.captured_frames[i]
+                break
 
+        img = Image.fromarray(logo, 'RGB')
+        img.show()
 
-        return x1, y1, x2, y2, avgLogoVal # we need also a value for comparing
+        return x1, y1, x2, y2, logo # we need also a value for comparing
