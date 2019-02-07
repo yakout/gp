@@ -25,16 +25,19 @@ def getCapturedFrames(video_filename):
     return captured_frames
 
 
-file_path = config.PATH + "Egypt v Uruguay - 2018 FIFA World Cup Russia™ - MATCH 2.mp4"
+file_path = config.PATH + "Salah double keeps Reds top  Liverpool 4-3 Crystal Palace  Highlights.mp4"
 captured_frames = getCapturedFrames(file_path)
 logoDetector = LogoDetector(captured_frames)
 x1, y1, x2, y2, img = logoDetector.detectLogo()
 logo = Logo(x1, y1, x2, y2, img)
 
+countHasLogo = 0
 for img in captured_frames:
     if(logo.hasLogo(img)):
         plt.imshow(img, interpolation='nearest')
         plt.show()
+        # countHasLogo += 1
+        # print("has logo", countHasLogo)
 
 
 print(logo.x1, " ", logo.y1, " ", logo.x2, " ", logo.y2)

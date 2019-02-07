@@ -162,13 +162,13 @@ class LogoDetector(object):
         img = Image.fromarray(logo, 'RGB')
         img.show()
 
-        # temp = logo
-        # for x in range(x1, x2+1):
-        #     for y in range(y1, y2+1):
-        #         temp[x][y] = [0, 0, 0]
-        #
-        #
-        # img = Image.fromarray(temp, 'RGB')
-        # img.show()
+        temp = logo
+        for x in range(x1, x2+1):
+            for y in range(y1, y2+1):
+                temp[x][y] = [0, 0, 0]
+
+
+        img = Image.fromarray(temp, 'RGB')
+        img.show()
 
         return x1, y1, x2, y2, logo # we need also a value for comparing
