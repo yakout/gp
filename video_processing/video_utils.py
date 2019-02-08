@@ -2,8 +2,8 @@ import cv2
 import config
 import constant
 import numpy as np
-from LogoDetector import LogoDetector
-from Logo import Logo
+from ScoreboardDetector import ScoreboardDetector
+from Scoreboard import Scoreboard
 from matplotlib import pyplot as plt
 
 def getCapturedFrames(video_filename):
@@ -27,17 +27,18 @@ def getCapturedFrames(video_filename):
 
 file_path = config.PATH + "Salah double keeps Reds top  Liverpool 4-3 Crystal Palace  Highlights.mp4"
 captured_frames = getCapturedFrames(file_path)
-logoDetector = LogoDetector(captured_frames)
-x1, y1, x2, y2, img = logoDetector.detectLogo()
-logo = Logo(x1, y1, x2, y2, img)
+scoreboardDetector = ScoreboardDetector(captured_frames)
+x1, y1, x2, y2, scoreboards = scoreboardDetector.detectScoreboard()
+scoreboard = Scoreboard(x1, y1, x2, y2, scoreboards)
 
-countHasLogo = 0
+print("number of scoreboards", len(scoreboards))
+countHasScoreboard = 0
 for img in captured_frames:
-    if(logo.hasLogo(img)):
-        plt.imshow(img, interpolation='nearest')
-        plt.show()
-        # countHasLogo += 1
-        # print("has logo", countHasLogo)
+    if(scoreboard.hasScoreboard(img)):
+        # plt.imshow(img, interpolation='nearest')
+        # plt.show()
+        countHasScoreboard += 1
+        print("has scoreboard", countHasScoreboard)
 
 
-print(logo.x1, " ", logo.y1, " ", logo.x2, " ", logo.y2)
+print(scoreboard.x1, " ", scoreboard.y1, " ", scoreboard.x2, " ", scoreboard.y2)
