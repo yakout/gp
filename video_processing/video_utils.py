@@ -26,6 +26,7 @@ def getCapturedFrames(video_filename):
 
 
 file_path = config.PATH + "Salah double keeps Reds top  Liverpool 4-3 Crystal Palace  Highlights.mp4"
+file_path = config.PATH + "Egypt v Uruguay - 2018 FIFA World Cup Russia™ - MATCH 2.mp4"
 captured_frames = getCapturedFrames(file_path)
 scoreboardDetector = ScoreboardDetector(captured_frames)
 x1, y1, x2, y2, scoreboards = scoreboardDetector.detectScoreboard()
@@ -35,10 +36,13 @@ print("number of scoreboards", len(scoreboards))
 countHasScoreboard = 0
 for img in captured_frames:
     if(scoreboard.hasScoreboard(img)):
-        # plt.imshow(img, interpolation='nearest')
-        # plt.show()
         countHasScoreboard += 1
-        print("has scoreboard", countHasScoreboard)
+        if countHasScoreboard % 10 == 0:
+          print("has scoreboard", countHasScoreboard)
+          plt.figure()
+          plt.imshow(img[x1:x2+1, y1:y2+1, :], interpolation='nearest')
+          plt.show()
+
 
 
 print(scoreboard.x1, " ", scoreboard.y1, " ", scoreboard.x2, " ", scoreboard.y2)
