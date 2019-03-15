@@ -6,3 +6,7 @@ videos/*.mp4
 
 # config
 video_processing/config.py
+
+# 
+**/__pycache__/
+**/_DS_Store/
