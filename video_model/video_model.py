@@ -1,16 +1,16 @@
 class Chunk():
 
-	def __init__(self):
-		self.frames = []
+	def __init__(self, frames):
+		self.frames = frames
 
 	def set_frames(self, frames):
 		self.frames = frames
 
 	def get_frame(self, index):
-		return frames[index]
+		return self.frames[index]
 
 	def get_frames_count(self):
-		return len(frames)
+		return len(self.frames)
 
 class Highlight():
 
