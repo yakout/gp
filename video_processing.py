@@ -8,6 +8,7 @@ class VideoChunkReader():
     chunk_size = 200
     vidcap = None
     is_reader_opened = False
+    offset = 0
 
     def __init__(self, video_path, chunk_size=200):
         self.video_path = video_path
@@ -16,12 +17,15 @@ class VideoChunkReader():
         if (self.vidcap.isOpened() == False): 
             print("Error opening video stream or file")
         else:
-            is_reader_opened = True
+            self.is_reader_opened = True
 
     def has_next(self):
-        return is_reader_opened
+        return self.is_reader_opened
 
     def get_next(self):
+        if not self.is_reader_opened:
+            return None
+
         success,image = self.vidcap.read()
         frames_count = self.vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
 
@@ -40,6 +44,9 @@ class VideoChunkReader():
         if (not self.vidcap.isOpened()):
             vidcap.release()
             is_reader_opened = False
+        else:
+            self.vidcap.SetCaptureProperty(cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
+            offset = offset + len(captured_frames) 
         return Chunk(captured_frames)
 
 

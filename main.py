@@ -3,6 +3,7 @@ import crowd
 import commentator
 import replay
 from highlights_processing import Merger, Summarizer
+from video_processing import VideoChunkReader, HighlightsVideoWriter
 
 # Initially, game video is on disk
 
@@ -23,10 +24,12 @@ def init():
 if __name__ == "__main__":
   init()
   video_path = from args
+  video_chunk_reader = VideoChunkReader(video_path)
   last_pos = 0
   all_highlights = []
-  while (!video_read()) {
-    chunk, last_pos = get_next_chunk(video_path, last_pos)
+  while (video_chunk_reader.has_next()) {
+    # chunk, last_pos = get_next_chunk(video_path, last_pos)
+    chunk = video_chunk_reader.get_next_chunk()
     highlghts_dict = component_container.get_chunk_highlights(chunk)
     # get_chunk_highlights calls (crowd, commentator, replay) .get_highlights
     all_highlights.append(Merger.merge(highlights_dict, component_confidence_map))
