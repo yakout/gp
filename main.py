@@ -26,14 +26,16 @@ if __name__ == "__main__":
   video_path = from args
   video_chunk_reader = VideoChunkReader(video_path)
   last_pos = 0
-  all_highlights = []
+  all_highlights = {}
   while (video_chunk_reader.has_next()) {
     # chunk, last_pos = get_next_chunk(video_path, last_pos)
     chunk = video_chunk_reader.get_next_chunk()
     highlghts_dict = component_container.get_chunk_highlights(chunk)
     # get_chunk_highlights calls (crowd, commentator, replay) .get_highlights
-    all_highlights.append(Merger.merge(highlights_dict, component_confidence_map))
+    # all_highlights.append(Merger.merge(highlights_dict, component_confidence_map))
+    all_highlights[chunk] = Merger.merge(highlights_dict, component_confidence_map)
   }
   
   summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
+  
   # Output all_highlights

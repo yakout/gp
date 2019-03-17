@@ -7,5 +7,6 @@ class Merger():
 class Summarizer():
 
 	@staticmethod
-	def summarize(highlights, duration_limit):
+	def summarize(highlights_dict, duration_limit):
+		# Must return object similar in structure to highlights_dict
 		pass

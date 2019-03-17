@@ -53,12 +53,31 @@ class VideoChunkReader():
 class HighlightsVideoWriter():
     
     @staticmethod
-    def write(highlights):
-        pass
+    def write(highlights_dict):
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        video = cv2.VideoWriter(config.OUTPUT_PATH + "output.mp4", fourcc, fps, (width,height))
+        for chunk, highlights in highlights_dict.items():
+            for highlight in highlights:
+                start ,end =  highlight.get_highlight_endpoints()
+                for frame_index in range(start, end + 1):
+                    video.write(chunk.get_frame(frame_index))
+        video.release()
+
 
 if __name__ == "__main__":
 
     v = VideoChunkReader("videos/bar-mad-sc.mp4")
-    chunk = v.get_next()
-    print(chunk.get_frames_count())
+    # chunk = v.get_next()
+    # print(chunk.get_frames_count())
+    counter = 0
+    while (v.has_next()):
+        chunk = v.get_next()
+        print("Chunk " + str(counter))
+        counter += 1
+        for i in range(chunk.get_frames_count()):
+            frame = chunk.get_frame(i)
+            print(frame.shape)
+            cv2.imshow('Frame',frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
     # print(chunk.get_frame(9))
