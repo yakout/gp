@@ -13,7 +13,7 @@ def get_next_chunk(video_path, last_pos):
   """
     Reads next chunk of video from disk and returns it, updates last_pos
   """
-	pass
+  pass
 
 def init():
   """
