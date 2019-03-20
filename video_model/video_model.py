@@ -12,6 +12,9 @@ class Chunk():
 	def get_frame(self, index):
 		return self.frames[index]
 
+	def get_frames(self):
+		return self.frames
+
 	def get_frames_count(self):
 		return len(self.frames)
 
