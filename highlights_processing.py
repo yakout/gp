@@ -21,6 +21,7 @@ class Merger():
 		return list of highlights
 		"""
 		ret = []
+		SCORE_THRESHOLD = 0.5
 
 		points = get_points(highlights_dict, component_confidence)
 
@@ -29,7 +30,7 @@ class Merger():
 		for point in points:
 			index, type, score = point[0], point[1], point[2]
 
-			if previous_index != -1 and index != previous_index:
+			if previous_index != -1 and index != previous_index and current_score > SCORE_THRESHOLD:
 				highlight = Highlight(previous_index, index, current_score)
 				ret.append(highlight)
 
