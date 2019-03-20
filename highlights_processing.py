@@ -8,9 +8,9 @@ class Merger():
 			component_score = component_confidence[component]
 			for highlight in highlights:
 				# Add start point with type 1
-				points.add((highlight.start_index, 1, component_score * highlight.score))
+				points.append((highlight.start_index, 1, component_score * highlight.score))
 				# Add end point with type 0
-				points.add((highlight.end_index, 0, component_score * highlight.score))
+				points.append((highlight.end_index, 0, component_score * highlight.score))
 		points.sort()
 		return points
 
@@ -31,7 +31,7 @@ class Merger():
 
 			if previous_index != -1 and index != previous_index:
 				highlight = Highlight(previous_index, index, current_score)
-				ret.add(highlight)
+				ret.append(highlight)
 
 			previous_index = index if current_score > 0 else -1
 			current_score += score if type == 1 else -score
@@ -46,4 +46,18 @@ class Summarizer():
 		"""
 		summarizes the the list of highlights for all chunks to the given length
 		"""
-		pass
+		highlights = []
+		for chunk, chunk_highlights in chunk_highlights_dict.items():
+			for highlight in chunk_highlights:
+				highlights.append(highlight)
+
+		highlights = sorted(highlights, key=lambda highlight: highlight.score, reverse=True)   # sort by score
+		summarized_highlights = []
+		for highlight in highlights:
+			l, r = highlight.get_highlight_endpoints()
+			if(duration_limit >= r-l+1):
+				summarized_highlights.append(highlight)
+				duration_limit -= r-l+1
+
+		summarized_highlights = sorted(summarized_highlights, key=lambda highlight: highlight.start_index)   # sort by start
+		return summarized_highlights
