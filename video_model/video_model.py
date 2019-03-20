@@ -25,6 +25,11 @@ class Highlight():
 		self.end_index = 0
 		self.score = 0
 
+	def __init__(self, start_index, end_index, score):
+		self.start_index = start_index
+		self.end_index = end_index
+		self.score = score
+
 	def set_highlight_endpoints(self, start_index: int, end_index: int):
 		self.start_index = start_index
 		self.end_index = end_index
