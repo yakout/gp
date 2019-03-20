@@ -1,6 +1,6 @@
 import numpy as np
 
-ZC_WINDOW_SIZE = 10
+ZC_WINDOW_SIZE = constant.WINDOW_SIZE
 BETA = 1
 THETAS = np.arange(.000001, .0001, .000001)
 

@@ -4,6 +4,12 @@ import commentator
 import replay
 from highlights_processing import Merger, Summarizer
 from video_processing import VideoChunkReader, HighlightsVideoWriter
+import cv2
+import numpy as np
+import config
+import constant
+from numpy import linalg as LA
+import ZeroCrossing as zc
 
 # Initially, game video is on disk
 
@@ -34,7 +40,7 @@ if __name__ == "__main__":
     # get_chunk_highlights calls (crowd, commentator, replay) .get_highlights
     # all_highlights.append(Merger.merge(highlights_dict, component_confidence_map))
     all_highlights[chunk] = Merger.merge(highlights_dict, component_confidence_map)
-  
+
   summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
-  
+
   # Output all_highlights
