@@ -21,13 +21,10 @@ class Chunk():
 
 class Highlight():
 	"""
-    This class represents a highlight extracted from the video (represented by a range), the start and end indices are relative to the chunk the highlight is extracted from.
+    This class represents a highlight extracted from the video (represented by
+	a range), the start and end indices are relative to the chunk the highlight
+	is extracted from.
     """
-
-	def __init__(self):
-		self.start_index = 0
-		self.end_index = 0
-		self.score = 0
 
 	def __init__(self, start_index, end_index, score):
 		self.start_index = start_index
