@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Mapping
-from video_model.video_model import Highlight
+from video_model.video_model import Highlight, Chunk
 
 class Component():
     """
