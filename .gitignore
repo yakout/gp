@@ -1,5 +1,9 @@
 # videos
-videos/*.mp4
+*.mp4
+*.avi
+
+# audio
+*.mp3
 
 # runnable python
 *.pyc

@@ -3,8 +3,9 @@ class Chunk():
     This class represents a chunk of the video read from disk.
     """
 
-	def __init__(self, frames):
+	def __init__(self, frames, audio):
 		self.frames = frames
+		self.audio = audio
 
 	def set_frames(self, frames):
 		self.frames = frames
