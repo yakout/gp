@@ -4,9 +4,8 @@ from video_model.video_model import Highlight, Chunk
 
 class Component():
     """
-This is an abstract class that any new highlight generator component should extend.
-"""
-
+    This is an abstract class that any new highlight generator component should extend.
+    """
     @abstractmethod
     def get_highlights(self, chunk: Chunk) -> 'List[Highlight]':
         """

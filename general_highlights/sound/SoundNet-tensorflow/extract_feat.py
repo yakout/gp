@@ -7,6 +7,7 @@ import numpy as np
 import argparse
 import sys
 import os
+import shutil
 
 # Make xrange compatible in both Python 2, 3
 try:
@@ -49,6 +50,13 @@ def parse_args():
 
 
 def extract_feat(model, sound_input, config, name):
+    # remove files in output folder to avoid unexpected results
+    write_path = os.path.join(config.outpath)
+    print("write path {}".format(write_path))
+    if os.path.isdir(write_path):
+        print("deleting file in write path {}".format(write_path))
+        shutil.rmtree(write_path)
+
     layer_min = config.layer_min
     layer_max = config.layer_max if config.layer_max is not None else layer_min + 1
     

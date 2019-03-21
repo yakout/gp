@@ -1,20 +1,26 @@
+import sys
 import cv2
 import numpy as np
 import config
 import constant
 from numpy import linalg as LA
-import ZeroCrossing as zc
+from general_highlights.replay_detection import ZeroCrossing as zc
 
 
 from abc import ABC, abstractmethod
 from typing import List, Mapping
-from ...video_model.video_model import Highlight, Chunk
-from ...component.component import Component
+
+sys.path.append("../..")
+from video_model.video_model import Highlight, Chunk
+from component.component import Component
 
 class SlowMotionComponent(Component):
     """
     This is an abstract class that any new highlight generator component should extend.
     """
+    @staticmethod
+    def get_name():
+        return 'slow_motion'
 
     @abstractmethod
     def get_highlights(self, chunk: Chunk) -> 'List[Highlight]':
@@ -25,7 +31,7 @@ class SlowMotionComponent(Component):
         """
         highlights = []
         # Read two frames, last and current, and convert current to gray.
-        last_frame = chunk.get_frame(0);
+        last_frame = chunk.get_frame(0)
 
         width, height, depth = last_frame.shape
         size = width*height*depth

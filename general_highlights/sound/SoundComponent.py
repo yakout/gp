@@ -2,14 +2,19 @@ import os
 import shutil
 
 import sys
-sys.path.append("../..")
+from classifier import AudioClassifier
+
 
 from abc import ABC, abstractmethod
 
+sys.path.append("../..")
 from video_model.video_model import Highlight, Chunk
 from component.component import Component
 
-class SlowMotionComponent(Component):
+class SoundComponent(Component):
+    @staticmethod
+    def get_name():
+        return 'sound'
 
     @abstractmethod
     def get_highlights(self, chunk: Chunk) -> 'List[Highlight]':
@@ -20,17 +25,18 @@ class SlowMotionComponent(Component):
         """
         audio = chunk.get_audio()
 
-        generate_mp3(audio)
+        self.generate_mp3(audio)
 
-        generate_data_txt(len(audio))
+        self.generate_data_txt(len(audio))
 
         # Extract features
         os.system('python extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
 
-        # TODO: Load model and classify then return list of positives
+        # Load model and classify then return list of positives
+        clf = AudioClassifier()
+        predictions, probs = clf.predict('./output')
 
-
-    def generate_mp3(audio):
+    def generate_mp3(self, audio):
         n = len(audio)
 
         window_size = 6000 # 6 seconds sample size
@@ -46,8 +52,7 @@ class SlowMotionComponent(Component):
             window.export(write_path + str(i // window_size) + ".mp3", format="mp3")
             i += window_size
 
-
-    def generate_data_txt(n):
+    def generate_data_txt(self, n):
         f = open('data.txt', 'w')
         for i in range(n):
             f.write('./data/' + str(i) + '.mp3')

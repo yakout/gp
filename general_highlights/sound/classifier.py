@@ -13,7 +13,13 @@ class AudioClassifier:
         self.neg_path = neg_path
         self.clf = None
         self.model_file_name = 'svm_model.pickle'
-        self.prepare_data()
+        if pos_path and neg_path:
+            # for training
+            self.prepare_data()
+            self.fit()
+        else:
+            self.load
+
 
     # This will read the sample from paths and prepare them to the model to fit.
     def prepare_data(self):
@@ -70,6 +76,5 @@ class AudioClassifier:
             X_data.append(arr.reshape(-1))
 
         X_data = np.array(X_data)
-        print(X_data.shape[1])
 
-        [self.clf.predict(X_data), self.clf.predict_proba(X_data)]
+        return [self.clf.predict(X_data), self.clf.predict_proba(X_data)]

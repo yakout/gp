@@ -117,7 +117,6 @@ class HighlightsVideoWriter():
 
 
 if __name__ == "__main__":
-
     # reader = AudioReader("videos/bar-mad-sc.mp4", "mp3")
     # audio = reader.get_audio()
     # print(len(audio))
@@ -137,3 +136,4 @@ if __name__ == "__main__":
     #         if cv2.waitKey(1) & 0xFF == ord('q'):
     #             break
     # # print(chunk.get_frame(9))
+    pass
