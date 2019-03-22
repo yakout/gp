@@ -16,20 +16,19 @@ class VideoChunkReader():
     This class is responsible for reading chunks of a video file.
     """
 
-    video_path = ""
-    chunk_size = 200
-    vidcap = None
-    is_reader_opened = False
-    fps = 0
-    audio = []
-
     def __init__(self, video_path, chunk_size=200):
+        self.audio = []
+        self.fps = 0
+        self.is_reader_opened = False
+
         self.video_path = video_path
         self.chunk_size = chunk_size
         self.vidcap = cv2.VideoCapture(self.video_path)
+
         if (self.vidcap.isOpened() == False):
             print("Error opening video stream or file")
         else:
+            print("extracting audio .. ")
             self.is_reader_opened = True
             self.extract_audio()
             self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
@@ -38,6 +37,7 @@ class VideoChunkReader():
     def extract_audio(self):
         audio_reader = AudioReader(self.video_path, 'mp3')
         self.audio = audio_reader.get_audio()
+        print("extracted audio {}".format(self.audio))
 
     def get_next_audio(self):
         seconds = self.chunk_size / self.fps
@@ -83,25 +83,23 @@ class VideoChunkReader():
 
 
 class AudioReader():
-
-    video_path = ""
-    audio = []
-
     def __init__(self, video_path, file_format):
+        self.audio = []
         self.video_path = video_path
-        self.issue_ffmpeg_command(file_format, video_path)
+        self.audio_path = self.video_path.split('/')[-1].split('.')[0] + ".mp3"
+        self.issue_ffmpeg_command(file_format)
         self.extract_audio_file()
 
     def get_audio(self):
         return self.audio
 
-    def issue_ffmpeg_command(self, file_format, video_path):
+    def issue_ffmpeg_command(self, file_format):
         # sp.call(['ffmpeg', '-i', self.video_path, '-f',
         #          file_format, '-ab', '192000', video_path.split('/')[-1].split('.')[0] + ".mp3", 'audio.mp3'])
-        sp.call(['ffmpeg', '-i', self.video_path, video_path.split('/')[-1].split('.')[0] + ".mp3"])
+        sp.call(['ffmpeg', '-i', self.video_path, self.audio_path])
 
     def extract_audio_file(self):
-        self.audio = AudioSegment.from_mp3('audio.mp3')
+        self.audio = AudioSegment.from_mp3(self.audio_path)
 
 
 class HighlightsVideoWriter():

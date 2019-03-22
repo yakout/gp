@@ -1,4 +1,5 @@
 import numpy as np
+from general_highlights.replay_detection import constant
 
 ZC_WINDOW_SIZE = constant.WINDOW_SIZE
 BETA = 1

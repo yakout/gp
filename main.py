@@ -8,6 +8,7 @@ from numpy import linalg as LA
 # from general_highlights.replay_detection import ZeroCrossing as zc
 from SoundComponent import SoundComponent
 from video_processing import VideoChunkReader
+from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
 
 
 # Initially, game video is on disk
@@ -19,7 +20,10 @@ def init():
       Initialize all needed structures(map of component confidence), constants, etc...
     """
     # {: 0.9, 'video': 0.5, }
-    pass
+
+    # registering components
+    SoundComponent()
+    # SlowMotionComponent()
 
 
 if __name__ == "__main__":
@@ -34,6 +38,7 @@ if __name__ == "__main__":
     while (video_chunk_reader.has_next()):
         chunk = video_chunk_reader.get_next()
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
+        print("ht3dy")
         all_highlights[chunk] = Merger.merge(highlghts_dict, component_confidence_map)
 
     # summarized_highights = Summarizer.summarize(all_highlights, duration_limit)

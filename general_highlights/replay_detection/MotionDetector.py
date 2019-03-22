@@ -48,5 +48,5 @@ def detetMotion(video_filename):
     cv2.destroyAllWindows()
 
 
-file_path = config.INPUT_PATH + "Salah double keeps Reds top  Liverpool 4-3 Crystal Palace  Highlights.mp4"
-detetMotion(file_path);
+# file_path = config.INPUT_PATH + "Salah double keeps Reds top  Liverpool 4-3 Crystal Palace  Highlights.mp4"
+# detetMotion(file_path)

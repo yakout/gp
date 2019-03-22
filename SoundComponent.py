@@ -9,7 +9,7 @@ from component import Component, ComponentContainer
 class SoundComponent(Component):
 
     def __init__(self):
-        ComponentContainer.register_component('sound', self)
+        ComponentContainer.register_component(SoundComponent.get_name(), self)
 
     @staticmethod
     def get_name():
@@ -29,6 +29,7 @@ class SoundComponent(Component):
         self.generate_data_txt(len(audio))
 
         # Extract features
+        print("extracting features ..")
         os.system('python extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
 
         # Load model and classify then return list of positives

@@ -1,8 +1,7 @@
 class Chunk():
     """
-This class represents a chunk of the video read from disk.
-"""
-
+    This class represents a chunk of the video read from disk.
+    """
     def __init__(self, frames=None, audio=None):
         self.frames = frames
         self.audio = audio
@@ -19,8 +18,8 @@ This class represents a chunk of the video read from disk.
     def get_frames_count(self):
         return len(self.frames)
 
-        def get_audio(self):
-            return self.audio
+    def get_audio(self):
+        return self.audio
 
 
 class Highlight():

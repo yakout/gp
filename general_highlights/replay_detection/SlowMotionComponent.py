@@ -1,8 +1,8 @@
 import sys
 import cv2
 import numpy as np
-import config
-import constant
+from general_highlights.replay_detection import config
+from general_highlights.replay_detection import constant
 from numpy import linalg as LA
 from general_highlights.replay_detection import ZeroCrossing as zc
 
@@ -11,8 +11,8 @@ from abc import ABC, abstractmethod
 from typing import List, Mapping
 
 sys.path.append("../..")
-from video_model.video_model import Highlight, Chunk
-from component.component import Component
+from video_model import Highlight, Chunk
+from component import Component
 
 class SlowMotionComponent(Component):
     """
