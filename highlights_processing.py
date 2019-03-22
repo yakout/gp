@@ -1,7 +1,8 @@
-from video_model.video_model import Highlight
+from video_model import Highlight
 
 class Merger():
 
+	@staticmethod
 	def get_points(highlights_dict, component_confidence):
 		points = []
 		for component, highlights in highlights_dict.items():
@@ -23,7 +24,7 @@ class Merger():
 		ret = []
 		SCORE_THRESHOLD = 0.5
 
-		points = get_points(highlights_dict, component_confidence)
+		points = Merger.get_points(highlights_dict, component_confidence)
 
 		current_score = 0
 		previous_index = -1
