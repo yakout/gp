@@ -31,6 +31,7 @@ class VideoChunkReader():
             print("extracting audio .. ")
             self.is_reader_opened = True
             self.extract_audio()
+            print("audio of length " + str(len(self.audio)) + " was extracted")
             self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
         self.offset = 0
 
@@ -67,7 +68,7 @@ class VideoChunkReader():
                 count += 1
                 captured_frames.append(frame)
                 if (count == self.chunk_size):
-                    return Chunk(captured_frames)
+                    break
             else:
                 break
         chunk_audio = None
@@ -75,10 +76,11 @@ class VideoChunkReader():
             vidcap.release()
             is_reader_opened = False
         else:
-            self.vidcap.SetCaptureProperty(
-                cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
+            self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.offset + len(captured_frames))
+            # self.vidcap.SetCaptureProperty(
+            #     cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
             chunk_audio = self.get_next_audio()
-            offset = offset + len(captured_frames)
+            self.offset = self.offset + len(captured_frames)
         return Chunk(captured_frames, chunk_audio)
 
 
