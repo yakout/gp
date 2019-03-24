@@ -48,18 +48,25 @@ class Summarizer():
 		"""
 		summarizes the the list of highlights for all chunks to the given length
 		"""
-		ret = {}
-		for chunk_position, highlights in chunk_highlights_dict.items():
-			highlights = sorted(highlights, key=lambda highlight: highlight.score, reverse=True)   # sort by score
+		highlights = []
+		chunkOfHighlight = {}
+		for chunk_position, chunk_highlights in chunk_highlights_dict.items():
+			for highlight in chunk_highlights:
+				highlights.append(highlight)
+				chunkOfHighlight[highlight] = chunk_position
 
-			summarized_highlights = []
-			for highlight in highlights:
-				l, r = highlight.get_highlight_endpoints()
-				if(duration_limit >= r-l+1):
-					summarized_highlights.append(highlight)
-					duration_limit -= r-l+1
-			
-			summarized_highlights = sorted(summarized_highlights, key=lambda highlight: highlight.start_index)   # sort by start
-			ret[chunk_position] = summarized_highlights
+		summarized_highlights = {}
+		highlights = sorted(highlights, key=lambda highlight: highlight.score, reverse=True)   # sort by score
+		for highlight in highlights:
+			l, r = highlight.get_highlight_endpoints()
+			if(duration_limit >= r-l+1):
+				chunk_position = chunkOfHighlight[highlight]
+				if chunk_position not in summarized_highlights:
+					summarized_highlights[chunk_position] = []
+				summarized_highlights[chunk_position].append(highlight)
+				duration_limit -= r-l+1
 
-		return ret
+		for chunk_position, highlights in summarized_highlights.items():
+			highlights = sorted(highlights, key=lambda highlight: highlight.start_index)   # sort by start
+		return summarized_highlights
+
