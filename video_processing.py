@@ -81,9 +81,10 @@ class VideoChunkReader():
                 break
         chunk_audio = None
         position = None
-        if (not self.vidcap.isOpened()):
+        if (not self.vidcap.isOpened() or not success):
             self.vidcap.release()
             self.is_reader_opened = False
+            return None
         else:
             self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.offset + len(captured_frames))
             # self.vidcap.SetCaptureProperty(
@@ -131,6 +132,8 @@ class HighlightsVideoWriter():
 
         while (self.video_chunk_reader.has_next()):
             chunk = self.video_chunk_reader.get_next()
+            if chunk == None:
+                break
             if chunk.get_chunk_position() not in highlights_dict:
                 continue
             highlights = highlights_dict[chunk.get_chunk_position()]

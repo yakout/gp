@@ -22,8 +22,8 @@ def init():
     # {: 0.9, 'video': 0.5, }
 
     # registering components
-    SoundComponent()
-    # SlowMotionComponent()
+    # SoundComponent()
+    SlowMotionComponent()
 
 
 if __name__ == "__main__":
@@ -42,6 +42,8 @@ if __name__ == "__main__":
 
     while (video_chunk_reader.has_next()):
         chunk = video_chunk_reader.get_next()
+        if chunk == None:
+          break
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
         all_highlights[chunk.get_chunk_position()] = Merger.merge(highlghts_dict, component_confidence_map)
         print(len(all_highlights[chunk.get_chunk_position()]))
