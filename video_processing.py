@@ -16,7 +16,7 @@ class VideoChunkReader():
     This class is responsible for reading chunks of a video file.
     """
 
-    def __init__(self, video_path, chunk_size=3600):
+    def __init__(self, video_path, chunk_size=150):
         self.fps = 0
         self.audio = []
         self.is_reader_opened = False
