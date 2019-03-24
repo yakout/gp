@@ -67,7 +67,7 @@ class SlowMotionComponent(Component):
             last_frame = current_frame
             print(zc.getZeroCrossingTheta_pzc(frames_count, window))
             frames_count += 1
-            cv2.imshow('Video',current_frame)
+            # cv2.imshow('Video',current_frame)
 
 
             return highlights

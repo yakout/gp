@@ -2,7 +2,7 @@ class Chunk():
     """
     This class represents a chunk of the video read from disk.
     """
-    def __init__(self, frames=None, audio=None, position):
+    def __init__(self, position, frames=None, audio=None):
         self.frames = frames
         self.audio = audio
         self.position = position

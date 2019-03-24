@@ -31,7 +31,7 @@ if __name__ == "__main__":
     
     video_path = sys.argv[1]
     video_chunk_reader = VideoChunkReader(video_path)
-
+    duration_limit = 40
     last_pos = 0
     all_highlights = {}
     st = SoundComponent.get_name()
@@ -39,12 +39,18 @@ if __name__ == "__main__":
       # SoundComponent.get_name(): 0.9, 
       SlowMotionComponent.get_name() : 0.9
       }
-    while (video_chunk_reader.has_next()):
+
+    count = 0
+    while (video_chunk_reader.has_next() and count < 1):
         chunk = video_chunk_reader.get_next()
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
-        all_highlights[chunk.get_position()] = Merger.merge(highlghts_dict, component_confidence_map)
+        all_highlights[chunk.get_chunk_position()] = Merger.merge(highlghts_dict, component_confidence_map)
+        print(len(all_highlights[chunk.get_chunk_position()]))
+        count += 1
 
+    video_chunk_reader.release()
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
-    writer = HighlightsVideoWriter(video_path, "output.mp4", video_chunk_reader.get_video_info())
+    
+    writer = HighlightsVideoWriter(video_path, "output.mp4", video_chunk_reader.get_video_info(), VideoChunkReader(video_path))
     writer.write(summarized_highights)
     # Output all_highlights
