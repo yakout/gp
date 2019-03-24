@@ -26,12 +26,12 @@ class AudioClassifier:
         X_all = []
         y_all = []
 
-        for i, file in enumerate(glob.glob(self.pos_path + '/*.npy')):
+        for _, file in enumerate(glob.glob(self.pos_path + '/*.npy')):
             #   print(np.load(file).shape)
             X_all.append(np.load(file).reshape(-1))
             y_all.append(1)
 
-        for i, file in enumerate(glob.glob(self.neg_path + '/*.npy')):
+        for _, file in enumerate(glob.glob(self.neg_path + '/*.npy')):
             X_all.append(np.load(file).reshape(-1))
             y_all.append(0)
 
