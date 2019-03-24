@@ -17,8 +17,8 @@ class VideoChunkReader():
     """
 
     def __init__(self, video_path, chunk_size=200):
-        self.audio = []
         self.fps = 0
+        self.audio = []
         self.is_reader_opened = False
 
         self.video_path = video_path
@@ -26,26 +26,26 @@ class VideoChunkReader():
         self.vidcap = cv2.VideoCapture(self.video_path)
 
         if (self.vidcap.isOpened() == False):
-            print("Error opening video stream or file")
+            print("Error opening video stream or file.")
         else:
-            print("extracting audio .. ")
+            print("Extracting audio...")
             self.is_reader_opened = True
             self.extract_audio()
-            print("audio of length " + str(len(self.audio)) + " was extracted")
+            print("Audio of length " + str(len(self.audio)) + " was extracted.")
             self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
         self.offset = 0
 
     def extract_audio(self):
         audio_reader = AudioReader(self.video_path, 'mp3')
         self.audio = audio_reader.get_audio()
-        print("extracted audio {}".format(self.audio))
+        print("Extracted audio {}".format(self.audio))
 
     def get_next_audio(self):
         seconds = self.chunk_size / self.fps
         milliseconds = seconds * 1000
         start = self.offset * milliseconds
         end = start + milliseconds
-        return self.audio[start: end]
+        return self.audio[start : end]
 
     def has_next(self) -> bool:
         return self.is_reader_opened
@@ -73,7 +73,7 @@ class VideoChunkReader():
                 break
         chunk_audio = None
         if (not self.vidcap.isOpened()):
-            vidcap.release()
+            self.vidcap.release()
             is_reader_opened = False
         else:
             self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.offset + len(captured_frames))
