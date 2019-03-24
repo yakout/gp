@@ -65,8 +65,8 @@ class VideoChunkReader():
         if not self.is_reader_opened:
             return None
 
-        success, image = self.vidcap.read()
-        frames_count = self.vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
+        success, _ = self.vidcap.read()
+        # frames_count = self.vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
 
         captured_frames = []
         count = 0
@@ -83,7 +83,7 @@ class VideoChunkReader():
         position = None
         if (not self.vidcap.isOpened()):
             self.vidcap.release()
-            is_reader_opened = False
+            self.is_reader_opened = False
         else:
             self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.offset + len(captured_frames))
             # self.vidcap.SetCaptureProperty(
@@ -128,10 +128,11 @@ class HighlightsVideoWriter():
     def write(self, highlights_dict):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         video = cv2.VideoWriter(self.output_path, fourcc, 15, self.video_info['dimensions'])
-        count = 0
-        while (self.video_chunk_reader.has_next() and count < 1):
+
+        while (self.video_chunk_reader.has_next()):
             chunk = self.video_chunk_reader.get_next()
-            count += 1
+            if chunk.get_chunk_position() not in highlights_dict:
+                continue
             highlights = highlights_dict[chunk.get_chunk_position()]
             for highlight in highlights:
                 start, end = highlight.get_highlight_endpoints()

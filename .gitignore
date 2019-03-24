@@ -19,3 +19,6 @@ video_processing/config.py
 data.txt
 
 .vscode
+
+# saved models
+*.pickle

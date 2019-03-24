@@ -6,6 +6,8 @@ class Merger():
 	def get_points(highlights_dict, component_confidence):
 		points = []
 		for component, highlights in highlights_dict.items():
+			if not highlights: continue
+				
 			component_score = component_confidence[component]
 			for highlight in highlights:
 				# Add start point with type 1

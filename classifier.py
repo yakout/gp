@@ -18,7 +18,7 @@ class AudioClassifier:
             self.prepare_data()
             self.fit()
         else:
-            self.load
+            self.load()
 
 
     # This will read the sample from paths and prepare them to the model to fit.
@@ -52,21 +52,21 @@ class AudioClassifier:
         clf = SVC(kernel='linear', random_state=random_state, tol=tol, C=C, probability=True)
         clf.fit(self.X_train, self.y_train)
         self.clf = clf
-        with open('svm_model.pickle', 'wb') as handle:
+        with open(self.model_file_name, 'wb') as handle:
             # The advantage of HIGHEST_PROTOCOL is that files get smaller.
             # This makes unpickling sometimes much faster.
             pickle.dump(clf, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # this will load pretrainded model from given path, or from default path
     def load(self):
-        with open('svm_model.pickle', 'rb') as handle:
+        with open(self.model_file_name, 'rb') as handle:
             self.clf = pickle.load(handle)
 
     def predict(self, data_path):
         X_data = []
         files = glob.glob(data_path + '/*.npy')
         # file: ./test_output_2/383.npy
-        files = sorted(files, key=lambda file: int(file.split('/')[-1].split('.')[0]))
+        files = sorted(files, key=lambda file: int(file.split('\\')[-1].split('.')[0]))
         shape = np.load(files[0]).shape
         for i, file in enumerate(files):
             arr = np.load(file)

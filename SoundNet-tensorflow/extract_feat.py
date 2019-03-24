@@ -54,8 +54,9 @@ def extract_feat(model, sound_input, config, name):
     write_path = os.path.join(config.outpath)
     print("write path {}".format(write_path))
     if os.path.isdir(write_path):
-        print("deleting file in write path {}".format(write_path))
+        print("deleting files in write path {}".format(write_path))
         shutil.rmtree(write_path)
+        os.mkdir(write_path)
 
     layer_min = config.layer_min
     layer_max = config.layer_max if config.layer_max is not None else layer_min + 1
