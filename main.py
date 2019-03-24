@@ -28,9 +28,10 @@ def init():
 
 if __name__ == "__main__":
     init()
+    
     video_path = sys.argv[1]
-    print(video_path)
     video_chunk_reader = VideoChunkReader(video_path)
+
     last_pos = 0
     all_highlights = {}
     st = SoundComponent.get_name()
@@ -41,7 +42,6 @@ if __name__ == "__main__":
     while (video_chunk_reader.has_next()):
         chunk = video_chunk_reader.get_next()
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
-        print("ht3dy")
         all_highlights[chunk] = Merger.merge(highlghts_dict, component_confidence_map)
 
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
