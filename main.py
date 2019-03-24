@@ -7,7 +7,7 @@ import numpy as np
 from numpy import linalg as LA
 # from general_highlights.replay_detection import ZeroCrossing as zc
 from SoundComponent import SoundComponent
-from video_processing import VideoChunkReader
+from video_processing import VideoChunkReader, HighlightsVideoWriter
 from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
 
 
@@ -22,8 +22,8 @@ def init():
     # {: 0.9, 'video': 0.5, }
 
     # registering components
-    SoundComponent()
-    # SlowMotionComponent()
+    # SoundComponent()
+    SlowMotionComponent()
 
 
 if __name__ == "__main__":
@@ -34,13 +34,16 @@ if __name__ == "__main__":
     last_pos = 0
     all_highlights = {}
     st = SoundComponent.get_name()
-    component_confidence_map = {SoundComponent.get_name(): 0.9}
+    component_confidence_map = {
+      # SoundComponent.get_name(): 0.9, 
+      SlowMotionComponent.get_name() : 0.9
+      }
     while (video_chunk_reader.has_next()):
         chunk = video_chunk_reader.get_next()
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
         print("ht3dy")
         all_highlights[chunk] = Merger.merge(highlghts_dict, component_confidence_map)
 
-    # summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
-
+    summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
+    HighlightsVideoWriter.write(summarized_highights)
     # Output all_highlights

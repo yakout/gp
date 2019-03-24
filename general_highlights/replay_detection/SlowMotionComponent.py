@@ -12,12 +12,15 @@ from typing import List, Mapping
 
 sys.path.append("../..")
 from video_model import Highlight, Chunk
-from component import Component
+from component import Component, ComponentContainer
 
 class SlowMotionComponent(Component):
     """
     This is an abstract class that any new highlight generator component should extend.
     """
+    def __init__ (self):
+        ComponentContainer.register_component(SlowMotionComponent.get_name(), self)
+
     @staticmethod
     def get_name():
         return 'slow_motion'
