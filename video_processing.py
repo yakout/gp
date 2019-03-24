@@ -36,6 +36,7 @@ class VideoChunkReader():
             self.video_dimensions = (int(self.vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)),
                 int(self.vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
         self.offset = 0
+        self.audio_offset = 0
 
     def extract_audio(self):
         audio_reader = AudioReader(self.video_path, 'mp3')
@@ -45,8 +46,13 @@ class VideoChunkReader():
     def get_next_audio(self):
         seconds = self.chunk_size / self.fps
         milliseconds = seconds * 1000
-        start = self.offset * milliseconds
+        start = self.audio_offset
         end = start + milliseconds
+        self.audio_offset = end
+        print("\t========")
+        print(start, end)
+        print(len(self.audio))
+        print("\t========")
         return self.audio[start : end]
 
     def get_video_info(self):
