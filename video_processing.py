@@ -20,7 +20,7 @@ class VideoChunkReader():
         self.fps = 0
         self.audio = []
         self.is_reader_opened = False
-
+        self.video_dimensions = (0, 0)
         self.video_path = video_path
         self.chunk_size = chunk_size
         self.vidcap = cv2.VideoCapture(self.video_path)
@@ -33,6 +33,8 @@ class VideoChunkReader():
             self.extract_audio()
             print("Audio of length " + str(len(self.audio)) + " was extracted.")
             self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
+            self.video_dimensions = (self.vidcap.get(cv2.CV_CAP_PROP_FRAME_WIDTH),
+                self.vidcap.get(cv2.CV_CAP_PROP_FRAME_HEIGHT))
         self.offset = 0
 
     def extract_audio(self):
@@ -46,6 +48,12 @@ class VideoChunkReader():
         start = self.offset * milliseconds
         end = start + milliseconds
         return self.audio[start : end]
+
+    def get_video_info(self):
+        return {
+        'fps' : self.fps,
+        'dimensions' : self.video_dimensions
+        }
 
     def has_next(self) -> bool:
         return self.is_reader_opened
@@ -72,6 +80,7 @@ class VideoChunkReader():
             else:
                 break
         chunk_audio = None
+        position = None
         if (not self.vidcap.isOpened()):
             self.vidcap.release()
             is_reader_opened = False
@@ -80,8 +89,9 @@ class VideoChunkReader():
             # self.vidcap.SetCaptureProperty(
             #     cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
             chunk_audio = self.get_next_audio()
+            position = (self.offset, self.offset + len(captured_frames))
             self.offset = self.offset + len(captured_frames)
-        return Chunk(captured_frames, chunk_audio)
+        return Chunk(captured_frames, chunk_audio, position)
 
 
 class AudioReader():
@@ -106,12 +116,19 @@ class AudioReader():
 
 class HighlightsVideoWriter():
 
-    @staticmethod
+    def __init__(self,video_path, output_path, video_info, video_chunk_reader) :
+        self.video_path = video_path
+        self.output_path = output_path
+        self.video_info = video_info
+        self.video_chunk_reader = video_chunk_reader
+
     def write(highlights_dict):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video = cv2.VideoWriter(config.OUTPUT_PATH +
-                                "output.mp4", fourcc, fps, (width, height))
-        for chunk, highlights in highlights_dict.items():
+        video = cv2.VideoWriter(self.output_path, fourcc, self.video_info['fps'], self.video_info['dimensions'])
+        
+        while (self.video_chunk_reader.has_next()):
+            chunk = self.video_chunk_reader.get_next()
+            highlights = highlights_dict[chunk.get_position()]
             for highlight in highlights:
                 start, end = highlight.get_highlight_endpoints()
                 for frame_index in range(start, end + 1):

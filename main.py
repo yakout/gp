@@ -42,8 +42,9 @@ if __name__ == "__main__":
     while (video_chunk_reader.has_next()):
         chunk = video_chunk_reader.get_next()
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
-        all_highlights[chunk] = Merger.merge(highlghts_dict, component_confidence_map)
+        all_highlights[chunk.get_position()] = Merger.merge(highlghts_dict, component_confidence_map)
 
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
-    HighlightsVideoWriter.write(summarized_highights)
+    writer = HighlightsVideoWriter(video_path, "output.mp4", video_chunk_reader.get_video_info())
+    writer.write(summarized_highights)
     # Output all_highlights

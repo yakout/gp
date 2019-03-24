@@ -44,12 +44,12 @@ class Merger():
 class Summarizer():
 
 	@staticmethod
-	def summarize(chunk_highlights_dict : "dict[chunk]=list of highlights", duration_limit : "max frames count"):
+	def summarize(chunk_highlights_dict : "dict[chunk_position]=list of highlights", duration_limit : "max frames count"):
 		"""
 		summarizes the the list of highlights for all chunks to the given length
 		"""
 		ret = {}
-		for chunk, highlights in chunk_highlights_dict.items():
+		for chunk_position, highlights in chunk_highlights_dict.items():
 			highlights = sorted(highlights, key=lambda highlight: highlight.score, reverse=True)   # sort by score
 
 			summarized_highlights = []
@@ -60,6 +60,6 @@ class Summarizer():
 					duration_limit -= r-l+1
 			
 			summarized_highlights = sorted(summarized_highlights, key=lambda highlight: highlight.start_index)   # sort by start
-			ret[chunk] = summarized_highlights
+			ret[chunk_position] = summarized_highlights
 
 		return ret
