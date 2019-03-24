@@ -77,4 +77,4 @@ class AudioClassifier:
 
         X_data = np.array(X_data)
 
-        return [self.clf.predict(X_data), self.clf.predict_proba(X_data)]
+        return self.clf.predict_proba(X_data)

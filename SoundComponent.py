@@ -37,7 +37,17 @@ class SoundComponent(Component):
 
         # Load model and classify then return list of positives
         clf = AudioClassifier()
-        predictions, probs = clf.predict('./output')
+        probs = clf.predict('./output')
+        print('Predictions', probs)
+
+        start = chunk.get_chunk_position()[0]
+
+        ret = []
+        for i in range(len(probs)):
+            if probs[i][1] > 0.6:
+                ret.append(Highlight(start + i * 150, start + (i + 1) * 150, probs[i][1]))
+        print('Found', len(ret), 'highlight(s).')
+        return ret
 
     def generate_mp3(self, audio):
         n = len(audio)
