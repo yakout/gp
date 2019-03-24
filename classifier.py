@@ -66,7 +66,7 @@ class AudioClassifier:
         X_data = []
         files = glob.glob(data_path + '/*.npy')
         # file: ./test_output_2/383.npy
-        files = sorted(files, key=lambda file: int(file.split('\\')[-1].split('.')[0]))
+        files = sorted(files, key=lambda file: int(file.split('/')[-1].split('.')[0]))
         shape = np.load(files[0]).shape
         for i, file in enumerate(files):
             arr = np.load(file)

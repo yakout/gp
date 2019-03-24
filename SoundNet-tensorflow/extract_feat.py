@@ -50,14 +50,6 @@ def parse_args():
 
 
 def extract_feat(model, sound_input, config, name):
-    # remove files in output folder to avoid unexpected results
-    write_path = os.path.join(config.outpath)
-    print("write path {}".format(write_path))
-    if os.path.isdir(write_path):
-        print("deleting files in write path {}".format(write_path))
-        shutil.rmtree(write_path)
-        os.mkdir(write_path)
-
     layer_min = config.layer_min
     layer_max = config.layer_max if config.layer_max is not None else layer_min + 1
     
@@ -112,6 +104,14 @@ if __name__ == '__main__':
         
         model.load()
         
+        # remove files in output folder to avoid unexpected results
+        write_path = os.path.join(args.outpath)
+        print("write path {}".format(write_path))
+        if os.path.isdir(write_path):
+            print("deleting files in write path {}".format(write_path))
+            shutil.rmtree(write_path)
+            os.mkdir(write_path)
+
         i = 0
         for sound_sample in sound_samples:
             output = extract_feat(model, sound_sample, args, i)

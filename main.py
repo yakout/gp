@@ -22,8 +22,8 @@ def init():
     # {: 0.9, 'video': 0.5, }
 
     # registering components
-    # SoundComponent()
-    SlowMotionComponent()
+    SoundComponent()
+    # SlowMotionComponent()
 
 
 if __name__ == "__main__":
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     
     video_path = sys.argv[1]
     video_chunk_reader = VideoChunkReader(video_path)
-    duration_limit = 40
+    duration_limit = 100000
     last_pos = 0
     all_highlights = {}
     st = SoundComponent.get_name()
