@@ -1,3 +1,5 @@
+import sys
+import os
 import numpy as np
 import glob
 import pickle  # for model persistence
@@ -10,30 +12,57 @@ from sklearn.model_selection import cross_validate, train_test_split, Stratified
 class AudioClassifier:
     # pos_path is the path for .npy files that contains positive samples
     # neg_path is the path for .npy files that contains negative samples
-    def __init__(self, pos_path=None, neg_path=None):
-        self.pos_path = pos_path
-        self.neg_path = neg_path
+    def __init__(self):
         self.clf = None
+        self.features_path = 'training_data/features'
+        self.data_path = 'training_data/data'
+        self.train_data_path = 'training_data'
+
         self.model_file_name = 'svm_model.pickle'
-        if pos_path and neg_path:
+        if os.path.isfile(self.model_file_name):
+            print("model exist, loading ..")
+            self.load()
+        else:
             # for training
+            print("training data ..")
+            self.extract_features()
             self.prepare_data()
             self.fit()
-        else:
-            self.load()
+
+    def extract_features(self):
+        print("extracting features from data ..")
+
+        self._generate_train_data_txt()
+
+        os.makedirs(self.features_path + '/pos')
+        os.makedirs(self.features_path + '/neg')
+
+        os.system("python3 SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t {} --outpath {}".format(
+            self.train_data_path + '/train_data_pos.txt',
+            self.features_path + '/pos')
+            )
+
+        os.system("python3 SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t {} --outpath {}".format(
+            self.train_data_path + '/train_data_neg.txt',
+            self.features_path + '/neg')
+            )
+
 
     # This will read the sample from paths and prepare them to the model to fit.
-
     def prepare_data(self):
+        print("preparing data ..")
+
         X_all = []
         y_all = []
 
-        for _, file in enumerate(glob.glob(self.pos_path + '/*.npy')):
+        # positive samples
+        for _, file in enumerate(glob.glob(self.features_path + '/pos/*.npy')):
             #   print(np.load(file).shape)
             X_all.append(np.load(file).reshape(-1))
             y_all.append(1)
 
-        for _, file in enumerate(glob.glob(self.neg_path + '/*.npy')):
+        # negative samples
+        for _, file in enumerate(glob.glob(self.features_path + '/neg/*.npy')):
             X_all.append(np.load(file).reshape(-1))
             y_all.append(0)
 
@@ -54,6 +83,7 @@ class AudioClassifier:
                   tol=tol, C=C, probability=True)
         clf.fit(self.X_train, self.y_train)
         self.clf = clf
+
         with open(self.model_file_name, 'wb') as handle:
             # The advantage of HIGHEST_PROTOCOL is that files get smaller.
             # This makes unpickling sometimes much faster.
@@ -85,3 +115,23 @@ class AudioClassifier:
         X_data = np.array(X_data)
 
         return self.clf.predict_proba(X_data)
+
+    def score(self):
+        return self.clf.score(self.X_test, self.y_test)
+
+
+    def _generate_train_data_txt(self):
+        with open(self.train_data_path + "/train_data_{}.txt".format('pos'), 'w') as handle:
+            files = glob.glob(self.data_path + '/pos/*.mp3')
+            for file in files:
+                handle.write(file)
+                handle.write('\n')
+
+        with open(self.train_data_path + "/train_data_{}.txt".format('neg'), 'w') as handle:
+            files = glob.glob(self.data_path + '/neg/*.mp3')
+            for file in files:
+                handle.write(file)
+                handle.write('\n')
+
+
+

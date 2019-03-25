@@ -5,3 +5,4 @@ pydub
 sklearn
 ffmpeg
 librosa
+scikit-learn==0.20.3

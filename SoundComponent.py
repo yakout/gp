@@ -32,7 +32,7 @@ class SoundComponent(Component):
         self.generate_data_txt(len(audio) // self.window_size)
 
         # Extract features
-        print("Extracting features...")
+        print("Extracting target data features...")
         os.system('python3 SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
 
         # Load model and classify then return list of positives

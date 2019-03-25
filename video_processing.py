@@ -119,10 +119,10 @@ class AudioReader():
     def issue_ffmpeg_command(self, file_format):
         # sp.call(['ffmpeg', '-i', self.video_path, '-f',
         #          file_format, '-ab', '192000', video_path.split('/')[-1].split('.')[0] + ".mp3", 'audio.mp3'])
-        sp.call(['ffmpeg', '-i', self.video_path, self.audio_path])
+        sp.call(['ffmpeg', '-i', self.video_path, '-ar', '44100', self.audio_path])
 
     def extract_audio_file(self):
-        self.audio = AudioSegment.from_mp3(self.audio_path)
+        self.audio = AudioSegment.from_file(self.audio_path, frame_rate=22050, sample_width=2)
 
 
 class HighlightsVideoWriter():
