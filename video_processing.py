@@ -16,7 +16,7 @@ class VideoChunkReader():
     This class is responsible for reading chunks of a video file.
     """
 
-    def __init__(self, video_path, chunk_size=150):
+    def __init__(self, video_path, chunk_size=2000):
         self.fps = 0
         self.audio = []
         self.is_reader_opened = False
@@ -34,7 +34,7 @@ class VideoChunkReader():
             print("Audio of length " + str(len(self.audio)) + " was extracted.")
             self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
             self.video_dimensions = (int(self.vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                int(self.vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+                                     int(self.vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
         self.offset = 0
         self.audio_offset = 0
 
@@ -53,12 +53,12 @@ class VideoChunkReader():
         print(start, end)
         print(len(self.audio))
         print("\t========")
-        return self.audio[start : end]
+        return self.audio[start: end]
 
     def get_video_info(self):
         return {
-        'fps' : self.fps,
-        'dimensions' : self.video_dimensions
+            'fps': self.fps,
+            'dimensions': self.video_dimensions
         }
 
     def has_next(self) -> bool:
@@ -92,7 +92,8 @@ class VideoChunkReader():
             self.is_reader_opened = False
             return None
         else:
-            self.vidcap.set(cv2.CAP_PROP_POS_FRAMES, self.offset + len(captured_frames))
+            self.vidcap.set(cv2.CAP_PROP_POS_FRAMES,
+                            self.offset + len(captured_frames))
             # self.vidcap.SetCaptureProperty(
             #     cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
             chunk_audio = self.get_next_audio()
@@ -126,7 +127,7 @@ class AudioReader():
 
 class HighlightsVideoWriter():
 
-    def __init__(self,video_path, output_path, video_info, video_chunk_reader) :
+    def __init__(self, video_path, output_path, video_info, video_chunk_reader):
         self.video_path = video_path
         self.output_path = output_path
         self.video_info = video_info
@@ -134,7 +135,8 @@ class HighlightsVideoWriter():
 
     def write(self, highlights_dict):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video = cv2.VideoWriter(self.output_path, fourcc, 15, self.video_info['dimensions'])
+        video = cv2.VideoWriter(self.output_path, fourcc,
+                                15, self.video_info['dimensions'])
 
         while (self.video_chunk_reader.has_next()):
             chunk = self.video_chunk_reader.get_next()

@@ -1,13 +1,15 @@
 import numpy as np
 import glob
-import pickle # for model persistence
+import pickle  # for model persistence
+import platform  # To check if windows or linux for file paths
 
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_validate, train_test_split, StratifiedShuffleSplit
 
+
 class AudioClassifier:
-    # pos_path is the path for .npy files that contains positive samples 
-    # neg_path is the path for .npy files that contains negative samples 
+    # pos_path is the path for .npy files that contains positive samples
+    # neg_path is the path for .npy files that contains negative samples
     def __init__(self, pos_path=None, neg_path=None):
         self.pos_path = pos_path
         self.neg_path = neg_path
@@ -20,8 +22,8 @@ class AudioClassifier:
         else:
             self.load()
 
-
     # This will read the sample from paths and prepare them to the model to fit.
+
     def prepare_data(self):
         X_all = []
         y_all = []
@@ -47,9 +49,9 @@ class AudioClassifier:
         self.X_test = X_test
         self.y_test = y_test
 
-
     def fit(self, random_state=0, tol=1e-5, C=0.01):
-        clf = SVC(kernel='linear', random_state=random_state, tol=tol, C=C, probability=True)
+        clf = SVC(kernel='linear', random_state=random_state,
+                  tol=tol, C=C, probability=True)
         clf.fit(self.X_train, self.y_train)
         self.clf = clf
         with open(self.model_file_name, 'wb') as handle:
@@ -66,7 +68,12 @@ class AudioClassifier:
         X_data = []
         files = glob.glob(data_path + '/*.npy')
         # file: ./test_output_2/383.npy
-        files = sorted(files, key=lambda file: int(file.split('\\')[-1].split('.')[0]))
+        if platform.system() == 'Windows':
+            files = sorted(files, key=lambda file: int(
+                file.split('\\')[-1].split('.')[0]))
+        else:
+            files = sorted(files, key=lambda file: int(
+                file.split('/')[-1].split('.')[0]))
         shape = np.load(files[0]).shape
         for i, file in enumerate(files):
             arr = np.load(file)
