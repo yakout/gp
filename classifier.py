@@ -84,6 +84,9 @@ class AudioClassifier:
         clf.fit(self.X_train, self.y_train)
         self.clf = clf
 
+        print("Model Score: {}".format(clf.score(self.X_test, self.y_test)))
+
+        # persist model
         with open(self.model_file_name, 'wb') as handle:
             # The advantage of HIGHEST_PROTOCOL is that files get smaller.
             # This makes unpickling sometimes much faster.
@@ -115,10 +118,6 @@ class AudioClassifier:
         X_data = np.array(X_data)
 
         return self.clf.predict_proba(X_data)
-
-    def score(self):
-        return self.clf.score(self.X_test, self.y_test)
-
 
     def _generate_train_data_txt(self):
         with open(self.train_data_path + "/train_data_{}.txt".format('pos'), 'w') as handle:
