@@ -19,7 +19,8 @@ class SlowMotionComponent(Component):
     This is an abstract class that any new highlight generator component should extend.
     """
     def __init__ (self):
-        ComponentContainer.register_component(SlowMotionComponent.get_name(), self)
+        # ComponentContainer.register_component(SlowMotionComponent.get_name(), self)
+        pass
 
     @staticmethod
     def get_name():

@@ -131,6 +131,3 @@ class AudioClassifier:
             for file in files:
                 handle.write(file)
                 handle.write('\n')
-
-
-

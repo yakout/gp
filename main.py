@@ -20,12 +20,13 @@ def init():
     SoundComponent()
     # SlowMotionComponent()
 
-
 if __name__ == "__main__":
     init()
-                                                                    
+
+    chunk_size = 3000
     video_path = sys.argv[1]
-    video_chunk_reader = VideoChunkReader(video_path)
+    video_chunk_reader = VideoChunkReader(video_path, chunk_size=chunk_size)
+
     duration_limit = 100000
     all_highlights = {}
     st = SoundComponent.get_name()
@@ -40,6 +41,7 @@ if __name__ == "__main__":
             break
         print("Chunk audio length : " + str(len(chunk.get_audio())))
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
+        print("highlghts dict {}".format(highlghts_dict))
         all_highlights[chunk.get_chunk_position()] = Merger.merge(
             highlghts_dict, component_confidence_map)
         print(len(all_highlights[chunk.get_chunk_position()]))
@@ -47,7 +49,11 @@ if __name__ == "__main__":
     video_chunk_reader.release()
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
 
-    writer = HighlightsVideoWriter(
-        video_path, "output.mp4", video_chunk_reader.get_video_info(), VideoChunkReader(video_path))
+    writer = HighlightsVideoWriter(video_path,
+                                   "output.mp4",
+                                   video_chunk_reader.get_video_info(),
+                                   VideoChunkReader(video_path, chunk_size=chunk_size))
+
+    print("summarized_highights {}".format(summarized_highights))
     writer.write(summarized_highights)
     # Output all_highlights

@@ -7,7 +7,6 @@ from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
 
 class SoundComponent(Component):
-
     def __init__(self):
         self.write_path = "data/"
         self.window_size = 6000 # 6 sec window
@@ -41,11 +40,11 @@ class SoundComponent(Component):
         print('Predictions', probs)
 
         start = chunk.get_chunk_position()[0]
-
+        frame_per_sample = 150
         ret = []
         for i in range(len(probs)):
-            if probs[i][1] > 0.6:
-                ret.append(Highlight(start + i * 150, start + (i + 1) * 150, probs[i][1]))
+            if probs[i][1] > 0.7:
+                ret.append(Highlight(start + i * frame_per_sample, start + (i + 1) * frame_per_sample, probs[i][1]))
         print('Found', len(ret), 'highlight(s).')
         return ret
 

@@ -50,10 +50,13 @@ class VideoChunkReader():
         end = start + milliseconds
         self.audio_offset = end
         print("\t========")
-        print(start, end)
-        print(len(self.audio))
+        print("start, end = {}, {}".format(start, end))
+        print("len(self.audio) = {}".format(len(self.audio)))
         print("\t========")
         return self.audio[start: end]
+
+    def get_fps(self):
+        return self.fps
 
     def get_video_info(self):
         return {
@@ -99,6 +102,7 @@ class VideoChunkReader():
             chunk_audio = self.get_next_audio()
             position = (self.offset, self.offset + len(captured_frames))
             self.offset = self.offset + len(captured_frames)
+        print("chunk position {}, captured_frames size {}".format(position, len(captured_frames)))
         return Chunk(position, captured_frames, chunk_audio)
 
     def release(self):
@@ -135,8 +139,10 @@ class HighlightsVideoWriter():
 
     def write(self, highlights_dict):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video = cv2.VideoWriter(self.output_path, fourcc,
-                                15, self.video_info['dimensions'])
+        video = cv2.VideoWriter(self.output_path,
+                                fourcc,
+                                self.video_chunk_reader.get_fps(),
+                                self.video_info['dimensions'])
 
         while (self.video_chunk_reader.has_next()):
             chunk = self.video_chunk_reader.get_next()
@@ -148,7 +154,8 @@ class HighlightsVideoWriter():
             for highlight in highlights:
                 start, end = highlight.get_highlight_endpoints()
                 for frame_index in range(start, end + 1):
-                    video.write(chunk.get_frame(frame_index))
+                    print("#write frame_index {}".format(frame_index))
+                    video.write(chunk.get_frame(frame_index % self.video_chunk_reader.chunk_size))
         video.release()
 
 
