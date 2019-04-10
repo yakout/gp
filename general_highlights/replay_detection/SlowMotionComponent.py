@@ -43,8 +43,9 @@ class SlowMotionComponent(Component):
         window_count = 0
         window = []
 
+        print("slow_motion started with number of frames:", chunk.get_frames_count())
         negro_window = []
-        for current_frame in chunk.get_frames():
+        for current_frame in chunk.get_clip().iter_frames():
             # We want two frames- last and current, so that we can calculate the different between them.
             # Store the current frame as last_frame, and then read a new one
             gray = cv2.cvtColor(current_frame, cv2.COLOR_BGR2GRAY)
@@ -52,6 +53,7 @@ class SlowMotionComponent(Component):
             # Find the absolute difference between frames
             d = LA.norm(cv2.absdiff(last_frame, current_frame))/size
 
+            # print("frame count:", frames_count , " d:", d)
             # print(d)
             window.append(d)
             if(frames_count%constant.WINDOW_SIZE == 0):
@@ -61,14 +63,15 @@ class SlowMotionComponent(Component):
                 print("median" , np.median(window))
                 print("variance", np.var(window))
                 score = zc.getZeroCrossingTheta_pzc(len(window)-1, window)
+                print("score", score)
                 if(np.mean(window) < .002 and score > 10):
                     highlights.append(Highlight(frames_count, frames_count-len(window)+1, score/100))
                 window = []
 
             last_frame = current_frame
-            print(zc.getZeroCrossingTheta_pzc(frames_count, window))
+            # print(zc.getZeroCrossingTheta_pzc(frames_count%constant.WINDOW_SIZE, window))
             frames_count += 1
             # cv2.imshow('Video',current_frame)
 
 
-            return highlights
+        return highlights

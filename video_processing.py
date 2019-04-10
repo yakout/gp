@@ -10,20 +10,26 @@ import os
 
 from pydub import AudioSegment
 
+import moviepy.editor as mpe
+from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
+
 
 class VideoChunkReader():
     """
     This class is responsible for reading chunks of a video file.
     """
 
-    def __init__(self, video_path, chunk_size=2000):
-        self.fps = 0
+    def __init__(self, video_path, chunk_size=1000):
         self.audio = []
         self.is_reader_opened = False
         self.video_dimensions = (0, 0)
         self.video_path = video_path
         self.chunk_size = chunk_size
         self.vidcap = cv2.VideoCapture(self.video_path)
+        self.video_clip = mpe.VideoFileClip(self.video_path)
+        self.fps = 0
+        self.chunk_idx = 0
+        self.shift_frames = 0
 
         if (self.vidcap.isOpened() == False):
             print("Error opening video stream or file.")
@@ -77,17 +83,26 @@ class VideoChunkReader():
         success, _ = self.vidcap.read()
         # frames_count = self.vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
 
-        captured_frames = []
-        count = 0
-        while success:
-            success, frame = self.vidcap.read()
-            if(success):
-                count += 1
-                captured_frames.append(frame)
-                if (count == self.chunk_size):
-                    break
-            else:
-                break
+
+        # captured_frames = []
+        # count = 0
+        # while success:
+        #     success, frame = self.vidcap.read()
+        #     if(success):
+        #         count += 1
+        #         captured_frames.append(frame)
+        #         if (count == self.chunk_size):
+        #             break
+        #     else:
+        #         break
+
+        # shot detection
+        start_index = self.shift_frames
+        end_index = self.shift_frames + self.chunk_size - 1
+
+        chunk_clip = self.video_clip.cutout(start_index/self.fps, end_index/self.fps)
+        number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
+
         chunk_audio = None
         position = None
         if (not self.vidcap.isOpened() or not success):
@@ -96,14 +111,15 @@ class VideoChunkReader():
             return None
         else:
             self.vidcap.set(cv2.CAP_PROP_POS_FRAMES,
-                            self.offset + len(captured_frames))
+                            self.offset + number_of_frames)
             # self.vidcap.SetCaptureProperty(
             #     cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
             chunk_audio = self.get_next_audio()
-            position = (self.offset, self.offset + len(captured_frames))
-            self.offset = self.offset + len(captured_frames)
-        print("chunk position {}, captured_frames size {}".format(position, len(captured_frames)))
-        return Chunk(position, captured_frames, chunk_audio)
+            position = (self.offset, self.offset + number_of_frames)
+            self.offset = self.offset + number_of_frames
+        print("chunk position {}, captured_frames size {}".format(position, number_of_frames))
+
+        return Chunk(position, chunk_clip, self.offset-number_of_frames, number_of_frames, chunk_audio)
 
     def release(self):
         self.vidcap.release()
@@ -159,24 +175,27 @@ class HighlightsVideoWriter():
         video.release()
 
 
-# if __name__ == "__main__":
-#     reader = AudioReader("videos/bar-mad-sc.mp4", "mp3")
-#     audio = reader.get_audio()
-#     print(len(audio))
+if __name__ == "__main__":
+    # reader = AudioReader("videos/bar-mad-sc.mp4", "mp3")
+    # audio = reader.get_audio()
+    # print(len(audio))
 
-#     vid_chunk = VideoChunkReader("videos/bar-mad-sc.mp4")
-#     # chunk = v.get_next()
-#     # print(chunk.get_frames_count())
-#     counter = 0
-#     while (vid_chunk.has_next()):
-#         chunk = vid_chunk.get_next()
-#         print("Chunk " + str(counter))
-#         counter += 1
-#         for i in range(chunk.get_frames_count()):
-#             frame = chunk.get_frame(i)
-#             print(frame.shape)
-#             cv2.imshow('Frame',frame)
-#             if cv2.waitKey(1) & 0xFF == ord('q'):
-#                 break
-#     # print(chunk.get_frame(9))
-#     pass
+    vid_chunk = VideoChunkReader("videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4")
+
+    # chunk = v.get_next()
+    # print(chunk.get_frames_count())
+    counter = 0
+    slow_motion = SlowMotionComponent()
+
+    while (vid_chunk.has_next()):
+        chunk = vid_chunk.get_next()
+        print("Chunk " + str(counter))
+        slow_motion.get_highlights(chunk)
+        counter += 1
+        for frame in chunk.get_clip().iter_frames():
+            # print(frame.shape)
+            cv2.imshow('Frame',frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+    # print(chunk.get_frame(9))
+    pass
