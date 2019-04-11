@@ -17,6 +17,8 @@ video_processing/config.py
 
 # runtime files
 data.txt
+*.txt
+training_data/*
 
 .vscode
 
