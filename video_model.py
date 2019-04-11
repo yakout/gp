@@ -20,10 +20,12 @@ class Chunk():
 
     def get_audio(self):
         rate = self.chunk_clip.fps
-        return AudioSegment(
-            self.chunk_clip.audio.to_soundarray(),
+        audio = self.chunk_clip.audio.to_soundarray()
+        return audioSegment(
+            audio,
             frame_rate=rate,
-            channels=1
+            channels=1,
+            sample_width=audio.dtype.itemsize
             )
 
     def get_chunk_position(self):
