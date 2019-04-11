@@ -21,7 +21,7 @@ class Chunk():
     def get_audio(self):
         rate = self.chunk_clip.fps
         audio = self.chunk_clip.audio.to_soundarray()
-        return audioSegment(
+        return AudioSegment(
             audio,
             frame_rate=rate,
             channels=1,
