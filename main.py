@@ -39,14 +39,13 @@ if __name__ == "__main__":
         chunk = video_chunk_reader.get_next()
         if chunk == None:
             break
-        print("Chunk audio length : " + str(len(chunk.get_audio())))
+        #print("Chunk audio length : " + str(len(chunk.get_audio())))
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
-        print("highlghts dict {}".format(highlghts_dict))
+        #print("Highlghts dict {}".format(highlghts_dict))
         all_highlights[chunk.get_chunk_position()] = Merger.merge(
             highlghts_dict, component_confidence_map)
-        print(len(all_highlights[chunk.get_chunk_position()]))
-
-    video_chunk_reader.release()
+        #print(len(all_highlights[chunk.get_chunk_position()]))
+    
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
 
     writer = HighlightsVideoWriter(video_path,
@@ -54,6 +53,5 @@ if __name__ == "__main__":
                                    video_chunk_reader.get_video_info(),
                                    VideoChunkReader(video_path, chunk_size=chunk_size))
 
-    print("summarized_highights {}".format(summarized_highights))
+    print("Summarized_highights {}".format(summarized_highights))
     writer.write(summarized_highights)
-    # Output all_highlights

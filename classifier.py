@@ -20,29 +20,29 @@ class AudioClassifier:
 
         self.model_file_name = 'svm_model.pickle'
         if os.path.isfile(self.model_file_name):
-            print("model exist, loading ..")
+            print("Model exist, loading ...")
             self.load()
         else:
             # for training
-            print("training data ..")
+            print("Training the sound model ...")
             self.extract_features()
             self.prepare_data()
             self.fit()
 
     def extract_features(self):
-        print("extracting features from data ..")
+        print("Extracting features from data ..")
 
         self._generate_train_data_txt()
 
-        os.makedirs(self.features_path + '/pos')
-        os.makedirs(self.features_path + '/neg')
+        os.makedirs(self.features_path + '/pos', exist_ok=True)
+        os.makedirs(self.features_path + '/neg', exist_ok=True)
 
-        os.system("python3 SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t {} --outpath {}".format(
+        os.system("python SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t {} --outpath {}".format(
             self.train_data_path + '/train_data_pos.txt',
             self.features_path + '/pos')
             )
 
-        os.system("python3 SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t {} --outpath {}".format(
+        os.system("python SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t {} --outpath {}".format(
             self.train_data_path + '/train_data_neg.txt',
             self.features_path + '/neg')
             )
@@ -50,7 +50,7 @@ class AudioClassifier:
 
     # This will read the sample from paths and prepare them to the model to fit.
     def prepare_data(self):
-        print("preparing data ..")
+        print("Preparing training data ..")
 
         X_all = []
         y_all = []
@@ -108,10 +108,10 @@ class AudioClassifier:
             files = sorted(files, key=lambda file: int(
                 file.split('/')[-1].split('.')[0]))
         shape = np.load(files[0]).shape
-        for i, file in enumerate(files):
+        for _, file in enumerate(files):
             arr = np.load(file)
             if arr.shape != shape:
-                print("corrupted file {}".format(file))
+                print("Corrupted file {}".format(file))
                 continue
             X_data.append(arr.reshape(-1))
 

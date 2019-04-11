@@ -25,19 +25,21 @@ class SoundComponent(Component):
         :return: list of highlights from given chunk
         """
         audio = chunk.get_audio()
+        if len(audio) < self.window_size:
+            return []
 
         self.generate_mp3(audio)
-
+        
         self.generate_data_txt(len(audio) // self.window_size)
 
         # Extract features
         print("Extracting target data features...")
-        os.system('python3 SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
+        os.system('python SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
 
         # Load model and classify then return list of positives
         clf = AudioClassifier()
         probs = clf.predict('./output')
-        print('Predictions', probs)
+        #print('Predictions', probs)
 
         start = chunk.get_chunk_position()[0]
         frame_per_sample = 150
@@ -45,12 +47,12 @@ class SoundComponent(Component):
         for i in range(len(probs)):
             if probs[i][1] > 0.7:
                 ret.append(Highlight(start + i * frame_per_sample, start + (i + 1) * frame_per_sample, probs[i][1]))
-        print('Found', len(ret), 'highlight(s).')
+        #print('Found', len(ret), 'highlight(s).')
         return ret
 
     def generate_mp3(self, audio):
         n = len(audio)
-        print('Audio Length =', n)
+        #print('Audio Length =', n)
 
         if os.path.isdir(self.write_path):
             shutil.rmtree(self.write_path)

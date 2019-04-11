@@ -63,8 +63,8 @@ def extract_feat(model, sound_input, config, name):
         if config.is_save:
             np.save(os.path.join(config.outpath, '{}.npy'.format(str(name))),
                     np.squeeze(feature))
-            print("Save layer {} with shape {} as {}/{}.npy".format( \
-                    idx, np.squeeze(feature).shape, config.outpath, str(name)))
+            #print("Save layer {} with shape {} as {}/{}.npy".format( \
+            #        idx, np.squeeze(feature).shape, config.outpath, str(name)))
     
     return features
 
