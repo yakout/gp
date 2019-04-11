@@ -25,7 +25,7 @@ class Chunk():
             audio,
             frame_rate=rate,
             channels=1,
-            sample_width=audio.dtype.itemsize
+            sample_width=audio.shape[0]
             )
 
     def get_chunk_position(self):
