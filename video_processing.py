@@ -35,7 +35,7 @@ class VideoChunkReader():
         self.offset = 0
         self.audio_offset = 0
         self.scenes = find_scenes(video_path)
-        print("scenes", self.scenes)
+        #print("scenes", self.scenes)
 
     def extract_audio(self):
         audio_reader = AudioReader(self.video_path, 'mp3')
@@ -80,15 +80,11 @@ class VideoChunkReader():
         number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
 
         position = (self.offset, self.offset + number_of_frames)
-        print("chunk position {}, captured_frames size {}".format(position, number_of_frames))
+        #print("chunk position {}, captured_frames size {}".format(position, number_of_frames))
         self.offset = self.offset + number_of_frames
 
         self.chunk_idx += 1
         return Chunk(position, chunk_clip, self.offset-number_of_frames, number_of_frames)
-
-    def release(self):
-        self.vidcap.release()
-
 
 class AudioReader():
     def __init__(self, video_path, file_format):
@@ -123,7 +119,7 @@ class HighlightsVideoWriter():
         video = cv2.VideoWriter(self.output_path,
                                 fourcc,
                                 self.video_chunk_reader.get_fps(),
-                                self.video_info['dimensions'])
+                                tuple(self.video_info['dimensions']))
 
         while (self.video_chunk_reader.has_next()):
             chunk = self.video_chunk_reader.get_next()
@@ -135,11 +131,11 @@ class HighlightsVideoWriter():
             for highlight in highlights:
                 start, end = highlight.get_highlight_endpoints()
                 for frame_index in range(start, end + 1):
-                    print("#write frame_index {}".format(frame_index))
+                    #print("#write frame_index {}".format(frame_index))
                     video.write(chunk.get_frame(frame_index % self.video_chunk_reader.chunk_size))
         video.release()
 
-
+'''
 if __name__ == "__main__":
     # reader = AudioReader("videos/bar-mad-sc.mp4", "mp3")
     # audio = reader.get_audio()
@@ -169,3 +165,4 @@ if __name__ == "__main__":
 
     # print(chunk.get_frame(9))
     pass
+'''

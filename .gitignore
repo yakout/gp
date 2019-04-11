@@ -33,3 +33,6 @@ training_data/*
 
 # SceneDetect Module output files
 *.csv
+
+*.rar
+*.zip

@@ -88,7 +88,7 @@ class Model():
                     try:
                         var = tf.get_variable(subkey)
                         self.sess.run(var.assign(data_dict[key][subkey]))
-                        print('Assign pretrain model {} to {}'.format(subkey, key))
+                        #print('Assign pretrain model {} to {}'.format(subkey, key))
                     except:
                         print('Ignore {}'.format(key))
         self.param_G.clear()
