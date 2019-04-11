@@ -6,3 +6,5 @@ sklearn
 ffmpeg
 librosa
 scikit-learn==0.20.3
+scenedetect
+moviepy

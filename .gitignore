@@ -28,3 +28,6 @@ data.txt
 
 # All .DS_Store files
 # *.DS_Store
+
+# SceneDetect Module output files
+*.csv
