@@ -13,6 +13,7 @@ from pydub import AudioSegment
 import moviepy.editor as mpe
 from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
 
+from scenedetector import *
 
 class VideoChunkReader():
     """
@@ -25,24 +26,16 @@ class VideoChunkReader():
         self.video_dimensions = (0, 0)
         self.video_path = video_path
         self.chunk_size = chunk_size
-        self.vidcap = cv2.VideoCapture(self.video_path)
         self.video_clip = mpe.VideoFileClip(self.video_path)
+        self.number_of_frames = int(self.video_clip.fps * self.video_clip.duration)
         self.fps = 0
         self.chunk_idx = 0
-        self.shift_frames = 0
-
-        if (self.vidcap.isOpened() == False):
-            print("Error opening video stream or file.")
-        else:
-            print("Extracting audio...")
-            self.is_reader_opened = True
-            self.extract_audio()
-            print("Audio of length " + str(len(self.audio)) + " was extracted.")
-            self.fps = self.vidcap.get(cv2.CAP_PROP_FPS)
-            self.video_dimensions = (int(self.vidcap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                                     int(self.vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        self.fps = self.video_clip.fps
+        self.video_dimensions = self.video_clip.size
         self.offset = 0
         self.audio_offset = 0
+        self.scenes = find_scenes(video_path)
+        print("scenes", self.scenes)
 
     def extract_audio(self):
         audio_reader = AudioReader(self.video_path, 'mp3')
@@ -71,55 +64,27 @@ class VideoChunkReader():
         }
 
     def has_next(self) -> bool:
-        return self.is_reader_opened
+        return self.chunk_idx < len(self.scenes)
 
     def get_next(self) -> Chunk:
         """
         Returns next available chunk read, or None if no more chunks are available.
         """
-        if not self.is_reader_opened:
-            return None
-
-        success, _ = self.vidcap.read()
-        # frames_count = self.vidcap.get(cv2.CAP_PROP_FRAME_COUNT)
-
-
-        # captured_frames = []
-        # count = 0
-        # while success:
-        #     success, frame = self.vidcap.read()
-        #     if(success):
-        #         count += 1
-        #         captured_frames.append(frame)
-        #         if (count == self.chunk_size):
-        #             break
-        #     else:
-        #         break
 
         # shot detection
-        start_index = self.shift_frames
-        end_index = self.shift_frames + self.chunk_size - 1
 
-        chunk_clip = self.video_clip.cutout(start_index/self.fps, end_index/self.fps)
+        start = self.scenes[self.chunk_idx][0].get_timecode()
+        end = self.scenes[self.chunk_idx][1].get_timecode()
+
+        chunk_clip = self.video_clip.subclip(start, end)
         number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
 
-        chunk_audio = None
-        position = None
-        if (not self.vidcap.isOpened() or not success):
-            self.vidcap.release()
-            self.is_reader_opened = False
-            return None
-        else:
-            self.vidcap.set(cv2.CAP_PROP_POS_FRAMES,
-                            self.offset + number_of_frames)
-            # self.vidcap.SetCaptureProperty(
-            #     cv2.CV_CAP_PROP_POS_FRAMES, offset + len(captured_frames))
-            chunk_audio = self.get_next_audio()
-            position = (self.offset, self.offset + number_of_frames)
-            self.offset = self.offset + number_of_frames
+        position = (self.offset, self.offset + number_of_frames)
         print("chunk position {}, captured_frames size {}".format(position, number_of_frames))
+        self.offset = self.offset + number_of_frames
 
-        return Chunk(position, chunk_clip, self.offset-number_of_frames, number_of_frames, chunk_audio)
+        self.chunk_idx += 1
+        return Chunk(position, chunk_clip, self.offset-number_of_frames, number_of_frames)
 
     def release(self):
         self.vidcap.release()
@@ -189,13 +154,18 @@ if __name__ == "__main__":
 
     while (vid_chunk.has_next()):
         chunk = vid_chunk.get_next()
+
         print("Chunk " + str(counter))
         slow_motion.get_highlights(chunk)
         counter += 1
+        chunk.get_clip().audio.write_audiofile("first.mp3")
+        print(chunk.get_audio())
+
         for frame in chunk.get_clip().iter_frames():
             # print(frame.shape)
             cv2.imshow('Frame',frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
     # print(chunk.get_frame(9))
     pass
