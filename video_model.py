@@ -19,7 +19,7 @@ class Chunk():
         return self.number_of_frames
 
     def get_audio(self):
-        rate = chunk_clip.fps
+        rate = self.chunk_clip.fps
         return AudioSegment(
             self.chunk_clip.audio.to_soundarray(),
             frame_rate=rate,
