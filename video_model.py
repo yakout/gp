@@ -5,12 +5,12 @@ class Chunk():
     """
     This class represents a chunk of the video read from disk.
     """
+
     def __init__(self, position, chunk_clip, shift_frames, number_of_frames):
         self.position = position
         self.chunk_clip = chunk_clip
         self.number_of_frames = number_of_frames
         self.shift_frames = shift_frames
-
 
     def get_frame(self, index):
         return self.chunk_clip.get_frame((index - self.shift_frames) / self.chunk_clip.fps)
@@ -29,6 +29,7 @@ class Chunk():
 
     def get_clip(self):
         return self.chunk_clip
+
 
 class Highlight():
     """
