@@ -13,7 +13,7 @@ class Chunk():
 
 
     def get_frame(self, index):
-        return self.chunk_clip.get_frame(index-self.shift_frames)
+        return self.chunk_clip.get_frame((index - self.shift_frames) / self.chunk_clip.fps)
 
     def get_frames_count(self):
         return self.number_of_frames
