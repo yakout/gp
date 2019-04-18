@@ -11,6 +11,7 @@ import os
 from pydub import AudioSegment
 
 import moviepy.editor as mpe
+from moviepy.editor import concatenate_videoclips
 from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
 
 from scenedetector import *
@@ -134,6 +135,27 @@ class HighlightsVideoWriter():
                     #print("#write frame_index {}".format(frame_index))
                     video.write(chunk.get_frame(frame_index % self.video_chunk_reader.chunk_size))
         video.release()
+
+    def write_video(self, highlights_dict):
+        total_video_clip = None
+        fps = self.video_chunk_reader.get_fps()
+
+        while (self.video_chunk_reader.has_next()):
+            chunk = self.video_chunk_reader.get_next()
+            if chunk == None:
+                break
+            if chunk.get_chunk_position() not in highlights_dict:
+                continue
+            highlights = highlights_dict[chunk.get_chunk_position()]
+            chunk_clip = chunk.get_clip()
+            for highlight in highlights:
+                start, end = highlight.get_highlight_endpoints()
+                cut_clip = chunk_clip.subclip(start / fps, end / fps)
+                if total_video_clip is None:
+                    total_video_clip = cut_clip
+                else:
+                    total_video_clip = concatenate_videoclips(total_video_clip, cut_clip)
+        total_video_clip.write_videofile(self.video_path)
 
 '''
 if __name__ == "__main__":

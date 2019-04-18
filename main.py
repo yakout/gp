@@ -45,7 +45,7 @@ if __name__ == "__main__":
         all_highlights[chunk.get_chunk_position()] = Merger.merge(
             highlghts_dict, component_confidence_map)
         #print(len(all_highlights[chunk.get_chunk_position()]))
-    
+
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
 
     writer = HighlightsVideoWriter(video_path,
@@ -54,4 +54,4 @@ if __name__ == "__main__":
                                    VideoChunkReader(video_path, chunk_size=chunk_size))
 
     print("Summarized_highights {}".format(summarized_highights))
-    writer.write(summarized_highights)
+    writer.write_video(summarized_highights)
