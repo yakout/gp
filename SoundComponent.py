@@ -6,10 +6,11 @@ from classifier import AudioClassifier
 from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
 
+
 class SoundComponent(Component):
     def __init__(self):
         self.write_path = "data/"
-        self.window_size = 6000 # 6 sec window
+        self.window_size = 6000  # 6 sec window
 
         ComponentContainer.register_component(SoundComponent.get_name(), self)
 
@@ -25,16 +26,18 @@ class SoundComponent(Component):
         :return: list of highlights from given chunk
         """
         audio = chunk.get_audio()
+        print("Length of current audio extracted from chunk = {}".format(len(audio)))
         if len(audio) < self.window_size:
             return []
 
         self.generate_mp3(audio)
-        
+
         self.generate_data_txt(len(audio) // self.window_size)
 
         # Extract features
         print("Extracting target data features...")
-        os.system('python SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
+        os.system(
+            'python SoundNet-tensorflow/extract_feat.py -m 17 -x 18 -s -p extract -t data.txt')
 
         # Load model and classify then return list of positives
         clf = AudioClassifier()
@@ -46,8 +49,9 @@ class SoundComponent(Component):
         ret = []
         for i in range(len(probs)):
             if probs[i][1] > 0.7:
-                ret.append(Highlight(start + i * frame_per_sample, start + (i + 1) * frame_per_sample, probs[i][1]))
-        #print('Found', len(ret), 'highlight(s).')
+                ret.append(Highlight(start + i * frame_per_sample,
+                                     start + (i + 1) * frame_per_sample, probs[i][1]))
+        print("Sound Component: highlights length returned: {}".format(len(ret)))
         return ret
 
     def generate_mp3(self, audio):
@@ -69,5 +73,6 @@ class SoundComponent(Component):
         f = open('data.txt', 'w')
         for i in range(n):
             f.write('./data/' + str(i) + '.mp3')
-            if i < n-1: f.write('\n')
+            if i < n-1:
+                f.write('\n')
         f.close()
