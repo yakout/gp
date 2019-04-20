@@ -32,7 +32,8 @@ class VideoChunkReader():
         self.offset = 0
         self.last_time_read = 0
         self.chunk_duration = chunk_duration
-        # self.scenes = find_scenes(video_path)
+        self.scenes = find_scenes(
+            video_path) if self.chunk_duration == 0 else []
 
     def get_fps(self):
         return self.fps
@@ -44,22 +45,24 @@ class VideoChunkReader():
         }
 
     def has_next(self) -> bool:
-        return self.last_time_read < self.video_clip.duration
-        # return self.chunk_idx < len(self.scenes)
+        return self.chunk_idx < len(self.scenes) if self.chunk_duration == 0 else self.last_time_read < self.video_clip.duration
 
     def get_next(self) -> Chunk:
         """
         Returns next available chunk read, or None if no more chunks are available.
         """
 
-        # shot detection
-        # start = self.scenes[self.chunk_idx][0].get_timecode()
-        # end = self.scenes[self.chunk_idx][1].get_timecode()
-        # chunk_clip = self.video_clip.subclip(start, end)
+        # Check if scenes are used or a fixed duration
+        if (self.chunk_duration != 0):
+            chunk_clip = self.video_clip.subclip(
+                self.last_time_read, min(self.last_time_read + self.chunk_duration, self.video_clip.duration))
+            self.last_time_read += self.chunk_duration
+        else:
+            # shot detection
+            start = self.scenes[self.chunk_idx][0].get_timecode()
+            end = self.scenes[self.chunk_idx][1].get_timecode()
+            chunk_clip = self.video_clip.subclip(start, end)
 
-        chunk_clip = self.video_clip.subclip(
-            self.last_time_read, min(self.last_time_read + self.chunk_duration, self.video_clip.duration))
-        self.last_time_read += self.chunk_duration
         number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
 
         position = (self.offset, self.offset + number_of_frames)
@@ -93,6 +96,8 @@ class HighlightsVideoWriter():
             if chunk == None:
                 break
             chunk_clip = chunk.get_clip()
+            if (chunk_clip is None):
+                print("Chunk clip is None")
 
             # If chunk doesn't have any highlights continue
             if chunk.get_chunk_position() not in highlights_dict:
@@ -115,6 +120,12 @@ class HighlightsVideoWriter():
                 cut_clip = chunk_clip.subclip(
                     start_frame / fps, end_frame / fps)
 
+                print("E7m, here")
+                if total_video_clip is not None:
+                    print("total_video__clip duration = {}".format(
+                        total_video_clip.duration))
+                print("cut_clip duration = {}".format(cut_clip.duration))
+
                 # Concatenate to total video
                 if total_video_clip is None:
                     total_video_clip = cut_clip
@@ -124,4 +135,7 @@ class HighlightsVideoWriter():
             # Update total frames passsed
             total_frames_passed += fps * chunk_clip.duration
         # Write concatenated highlights clips to file
-        total_video_clip.write_videofile(self.output_path)
+        if total_video_clip is not None:
+            total_video_clip.write_videofile(self.output_path)
+        else:
+            print("No highlights written")

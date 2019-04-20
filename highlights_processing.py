@@ -31,7 +31,7 @@ class Merger():
         component_confidence : dict[component_name]=confidence(0 -1)
         """
         ret = []
-        SCORE_THRESHOLD = 0.8
+        SCORE_THRESHOLD = 0.65
 
         points = Merger.get_points(highlights_dict, component_confidence)
         # print("#merge points : {}".format(points))
@@ -60,7 +60,7 @@ class Summarizer():
     @staticmethod
     def summarize(chunk_highlights_dict, duration_limit):
         """
-        summarizes the the list of highlights for all chunks to the given length
+        summarizes the list of highlights for all chunks to the given length
         chunk_highlights_dict : "dict[chunk_position]=list of highlights"
         duration_limit : "max frames count"
         """

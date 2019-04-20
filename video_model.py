@@ -1,4 +1,5 @@
 from pydub import AudioSegment
+import os
 
 
 class Chunk():
@@ -20,11 +21,16 @@ class Chunk():
 
     def get_audio(self):
         audio = self.chunk_clip.audio
-        file_name = "clip_audio_" + str(self.position[0]) + ".mp3"
+        file_path = "clip_audio_" + str(self.position[0]) + ".mp3"
         # print("Writing new audio file for chunk #{}".format(self.position[0]))
-        audio.write_audiofile(file_name)
+        audio.write_audiofile(file_path)
+
         # pydub returns array of audio in milliseconds
-        return AudioSegment.from_mp3(file_name)
+        audio = AudioSegment.from_mp3(file_path)
+
+        # Remove mp3 file created, uncomment to monitor all mp3 files created for each chunk
+        os.remove(file_path)
+        return audio
 
     def get_chunk_position(self):
         return self.position
