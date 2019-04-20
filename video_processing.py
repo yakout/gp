@@ -120,7 +120,6 @@ class HighlightsVideoWriter():
                 cut_clip = chunk_clip.subclip(
                     start_frame / fps, end_frame / fps)
 
-                print("E7m, here")
                 if total_video_clip is not None:
                     print("total_video__clip duration = {}".format(
                         total_video_clip.duration))
