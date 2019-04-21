@@ -150,7 +150,6 @@ class HighlightsVideoWriter():
             chunk_clip = chunk.get_clip()
             for highlight in highlights:
                 start, end = highlight.get_highlight_endpoints()
-                print("Chunk Boundaries : ", str(start), str(end))
                 cut_clip = chunk_clip.subclip(start / fps, end / fps)
                 if total_video_clip is None:
                     total_video_clip = cut_clip
