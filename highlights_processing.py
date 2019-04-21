@@ -31,7 +31,7 @@ class Merger():
         component_confidence : dict[component_name]=confidence(0 -1)
         """
         ret = []
-        SCORE_THRESHOLD = 0.65
+        SCORE_THRESHOLD = 0.7
 
         points = Merger.get_points(highlights_dict, component_confidence)
         # print("#merge points : {}".format(points))

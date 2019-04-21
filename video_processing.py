@@ -8,8 +8,6 @@ from typing import List, Any
 import subprocess as sp
 import os
 
-from pydub import AudioSegment
-
 import moviepy.editor as mpe
 from moviepy.editor import concatenate_videoclips
 from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
@@ -20,6 +18,8 @@ from scenedetector import *
 class VideoChunkReader():
     """
     This class is responsible for reading chunks of a video file.
+
+    chunk_duration: if 0 we use shot detection (scenes)
     """
 
     def __init__(self, video_path, chunk_duration=120):
@@ -53,16 +53,19 @@ class VideoChunkReader():
         """
 
         # Check if scenes are used or a fixed duration
+        # if duration is 0 we use shot detection otherwise we read using moviepy
         if (self.chunk_duration != 0):
-            chunk_clip = self.video_clip.subclip(
-                self.last_time_read, min(self.last_time_read + self.chunk_duration, self.video_clip.duration))
-            self.last_time_read += self.chunk_duration
-        else:
-            # shot detection
-            start = self.scenes[self.chunk_idx][0].get_timecode()
-            end = self.scenes[self.chunk_idx][1].get_timecode()
+            start = self.last_time_read
+            end = min(self.last_time_read + self.chunk_duration, self.video_clip.duration)
             chunk_clip = self.video_clip.subclip(start, end)
+            self.last_time_read += chunk_clip.duration
+        else:
+            # Shot detection
+            start = self.scenes[self.chunk_idx][0].get_frames()
+            end = self.scenes[self.chunk_idx][1].get_frames()
+            chunk_clip = self.video_clip.subclip(int(start / self.fps), int(end / self.fps))
 
+        print("this is very serious {}".format(chunk_clip.duration))
         number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
 
         position = (self.offset, self.offset + number_of_frames)
@@ -91,6 +94,7 @@ class HighlightsVideoWriter():
         # Total frames already read
         total_frames_passed = 0
         while (self.video_chunk_reader.has_next()):
+            print("total_frames_passed: {}".format(total_frames_passed))
             # Get next chunk
             chunk = self.video_chunk_reader.get_next()
             if chunk == None:
@@ -101,6 +105,7 @@ class HighlightsVideoWriter():
 
             # If chunk doesn't have any highlights continue
             if chunk.get_chunk_position() not in highlights_dict:
+                print("chunk has no highlight. chunk pos: {}".format(chunk.get_chunk_position()))
                 total_frames_passed += fps * chunk_clip.duration
                 continue
 

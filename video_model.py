@@ -21,15 +21,7 @@ class Chunk():
 
     def get_audio(self):
         audio = self.chunk_clip.audio
-        file_path = "clip_audio_" + str(self.position[0]) + ".mp3"
-        # print("Writing new audio file for chunk #{}".format(self.position[0]))
-        audio.write_audiofile(file_path)
-
-        # pydub returns array of audio in milliseconds
-        audio = AudioSegment.from_mp3(file_path)
-
-        # Remove mp3 file created, uncomment to monitor all mp3 files created for each chunk
-        os.remove(file_path)
+        print("audio extracted from chunk_clip: {}".format(audio.duration))
         return audio
 
     def get_chunk_position(self):
@@ -37,6 +29,9 @@ class Chunk():
 
     def get_clip(self):
         return self.chunk_clip
+
+    def get_fps(self):
+        return self.chunk_clip.fps
 
 
 class Highlight():
