@@ -6,6 +6,9 @@ from component import Chunk, Component, ComponentContainer
 import cv2
 import numpy as np
 from numpy import linalg as LA
+import colorama
+
+
 # from general_highlights.replay_detection import ZeroCrossing as zc
 
 from SoundComponent import SoundComponent
@@ -31,6 +34,7 @@ def init():
 
 if __name__ == "__main__":
     # Initialize Components and Components' confidence map
+    colorama.init() # for windows
     init()
     component_confidence_map = {
         SoundComponent.get_name(): 0.9,
@@ -58,12 +62,13 @@ if __name__ == "__main__":
     all_highlights = {}  # Dict of {'chunk_position': List of Highlight}
 
     if workers_count > 0:
-        # init our slaves
+        print(colorama.Fore.BLUE + "Initializing our slaves .." + colorama.Style.RESET_ALL)
         chunks_queue = Queue()
         for i in range(workers_count):
-            worker = HighlightGenerator(chunks_queue, all_highlights, component_confidence_map)
+            worker = HighlightGenerator(chunks_queue, all_highlights, component_confidence_map, i)
             worker.daemon = True # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.start() # start worker in the background to be ready for consuming chunks once available
+            print(colorama.Fore.BLUE + "Worker {} .. done".format(i) + colorama.Style.RESET_ALL)
 
     # Iterate over all video's chunks and get highlights
     while (video_chunk_reader.has_next()):
@@ -71,6 +76,7 @@ if __name__ == "__main__":
         if chunk == None:
             break
         if workers_count > 0:
+            print(colorama.Fore.BLUE + "Approximate Queue size: {}".format(chunks_queue.qsize()) + colorama.Style.RESET_ALL)
             chunks_queue.put(chunk)
         else:
             # Get highlights list of each component, highlights_dict = {'component_name': List of Highlight}
@@ -79,9 +85,11 @@ if __name__ == "__main__":
                 highlghts_dict, component_confidence_map)
 
     if workers_count > 0:
+        print(colorama.Fore.RED + "Waiting until all workers are done .." + colorama.Style.RESET_ALL)
         # Causes the main thread to wait for the queue to finish processing all the chunks
         chunks_queue.join()
 
+    print(colorama.Fore.GREEN + "All workers are done!" + colorama.Style.RESET_ALL)
     # summarized_highlights = {'chunk_position': List of Highlight} that is more summarized according to user's duration_limit specified
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
     print("Summarized_highights {}".format(summarized_highights))

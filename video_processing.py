@@ -57,7 +57,7 @@ class VideoChunkReader():
         if (self.chunk_duration != 0):
             start = self.last_time_read
             end = min(self.last_time_read + self.chunk_duration, self.video_clip.duration)
-            chunk_clip = self.video_clip.subclip(start, end)
+            chunk_clip = self.video_clip.copy().subclip(start, end).copy()
             self.last_time_read += chunk_clip.duration
         else:
             # Shot detection
@@ -65,7 +65,7 @@ class VideoChunkReader():
             end = self.scenes[self.chunk_idx][1].get_frames()
             chunk_clip = self.video_clip.subclip(int(start / self.fps), int(end / self.fps))
 
-        print("this is very serious {}".format(chunk_clip.duration))
+        # print("Chunk Duration! {}".format(chunk_clip.duration))
         number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
 
         position = (self.offset, self.offset + number_of_frames)

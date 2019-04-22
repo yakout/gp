@@ -31,7 +31,7 @@ class Merger():
         component_confidence : dict[component_name]=confidence(0 -1)
         """
         ret = []
-        SCORE_THRESHOLD = 0.7
+        SCORE_THRESHOLD = 0.8
 
         points = Merger.get_points(highlights_dict, component_confidence)
         # print("#merge points : {}".format(points))
@@ -43,8 +43,7 @@ class Merger():
             # print("index {}, type {}, score {}".format(index, type, score))
 
             if previous_index != -1 and index != previous_index and current_score > SCORE_THRESHOLD:
-                print("#merge previous_index {}, current_score {}, index {}".format(
-                    previous_index, current_score, index))
+                # print("#merge previous_index {}, current_score {}, index {}".format(previous_index, current_score, index))
                 highlight = Highlight(previous_index, index, current_score)
                 ret.append(highlight)
 
