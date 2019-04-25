@@ -7,8 +7,7 @@ TRAIN_EXT = ".txt"
 import numpy as np
 
 # import lk_track as features_extractor
-import sys
-print(sys.path)
+
 from lk_track import FeaturesExtractor
 
 import sys

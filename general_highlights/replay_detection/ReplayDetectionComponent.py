@@ -1,10 +1,15 @@
+import numpy as np
 from keras.models import load_model
 
-from video_processing.model_trainer.lk_track import FeaturesExtractor
+import os, sys
+sys.path.append(os.getcwd() + '/general_highlights/replay_detection/video_processing/model_trainer/')
+from lk_track import FeaturesExtractor
 
 sys.path.append("../..")
 from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
+
+model_location = os.getcwd() + "/general_highlights/replay_detection/video_processing/" + "model_trainer/replay_model.h5"
 
 class ReplayDetectionComponent(Component):
     """
@@ -12,13 +17,12 @@ class ReplayDetectionComponent(Component):
     """
     def __init__ (self):
         ComponentContainer.register_component(ReplayDetectionComponent.get_name(), self)
-        self.model = load_model('./model_trainer/replay_model.h5')
+        self.model = load_model(model_location)
 
     @staticmethod
     def get_name():
         return 'replay_detection'
 
-    @abstractmethod
     def get_highlights(self, chunk: Chunk) -> 'List[Highlight]':
         """
         Gets highlights for this video chunk as per this component's perspective.
@@ -27,8 +31,10 @@ class ReplayDetectionComponent(Component):
         """
         highlight = []
         features = FeaturesExtractor(chunk).run()
-        prediction = model.predict(features)[0]
-        if (prediction > 0.6):
+        # print("\t\t" + str(np.array(features).shape))
+        features = np.array(features).reshape((1,2))
+        prediction = self.model.predict(features)
+        if (prediction[0] > 0.6):
             highlight.append(Highlight(0, chunk.get_frames_count(), 1))
 
         return highlight
