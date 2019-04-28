@@ -13,6 +13,8 @@ from component import Chunk, Component, ComponentContainer
 from SoundComponent import SoundComponent
 from video_processing import VideoChunkReader, HighlightsVideoWriter
 from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
+from general_highlights.replay_detection.ReplayDetectionComponent import ReplayDetectionComponent
+
 from highlight_generator import HighlightGenerator
 
 # Deactivating tensorflow warnings
@@ -26,6 +28,7 @@ def init():
 
     # registering components
     SoundComponent()
+    # ReplayDetectionComponent()
     # SlowMotionComponent()
 
 
@@ -39,6 +42,7 @@ if __name__ == "__main__":
     init()
     component_confidence_map = {
         SoundComponent.get_name(): 0.9,
+        # ReplayDetectionComponent.get_name(): 0.9
         # SlowMotionComponent.get_name() : 0.9
     }
 
@@ -63,6 +67,7 @@ if __name__ == "__main__":
                                           chunk_duration=chunk_duration)
 
     all_highlights = {}  # Dict of {'chunk_position': List of Highlight}
+    chunks_length_dict = {} # Dict of {'chunk_position' : length in frames}
 
     if workers_count > 0:
         print(colorama.Fore.YELLOW + "Initializing our slaves .." + colorama.Style.RESET_ALL)
@@ -91,6 +96,7 @@ if __name__ == "__main__":
             highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
             all_highlights[chunk.get_chunk_position()] = Merger.merge(
                 highlghts_dict, component_confidence_map)
+            chunks_length_dict[chunk.get_chunk_position()] = chunk.get_frames_count()
 
     if workers_count > 0:
         print(colorama.Fore.RED + "Waiting until all workers are done .." + colorama.Style.RESET_ALL)
