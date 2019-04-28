@@ -29,9 +29,9 @@ from common import anorm2, draw_str
 from time import clock
 
 import sys
-sys.path.append("../../../../")
+
+sys.path.append("../../../")
 from video_model import Chunk
-from video_processing import VideoChunkReader
 
 lk_params = dict( winSize  = (15, 15),
                   maxLevel = 2,
@@ -41,9 +41,8 @@ feature_params = dict( maxCorners = 500,
                        qualityLevel = 0.3,
                        minDistance = 7,
                        blockSize = 7 )
-FEATURES_SIZE = 2
 
-class FeaturesExtractor:
+class App:
     def __init__(self, video_chunk):
         self.track_len = 10
         self.detect_interval = 5
@@ -54,7 +53,7 @@ class FeaturesExtractor:
     def run(self):
         mean_motion_vector = 0
         mean_number_of_tracks = 0
-        for frame in self.chunk.get_clip().iter_frames():
+        for frame in self.get_clip().iter_frames():
             frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             motion_vector = 0
             if len(self.tracks) > 0:
@@ -95,18 +94,17 @@ class FeaturesExtractor:
             self.prev_gray = frame_gray
 
 
-        return [mean_motion_vector, mean_number_of_tracks]
+        return mean_motion_vector, mean_number_of_tracks
 
 def main():
-    # import sys
+    import sys
 #    try:
 #        video_src = sys.argv[1]
 #    except:
 #        video_src = 0
-    # sys.path.append("../../../")
-    v1, v2 = FeaturesExtractor("/home/ahmednagga19/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/liv-cry-4-3.mp4").run()
-    print(v1)
-    print(v2)
+    sys.path.append("../../../")
+    App("/Users/ahmed/Desktop/GP/gp/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4").run()
+    print('Done')
 
 
 if __name__ == '__main__':
