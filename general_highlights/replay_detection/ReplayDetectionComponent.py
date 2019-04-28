@@ -14,10 +14,16 @@ model_location = os.getcwd() + "/general_highlights/replay_detection/video_proce
 class ReplayDetectionComponent(Component):
     """
     This is an abstract class that any new highlight generator component should extend.
+
+    Attributes:
+        - model : DL model to use for classification to whether chunks are considered
+        replay or note.
+        - video_offset : frames offset in video.
     """
     def __init__ (self):
         ComponentContainer.register_component(ReplayDetectionComponent.get_name(), self)
         self.model = load_model(model_location)
+        self.video_offset = 0
 
     @staticmethod
     def get_name():
@@ -35,6 +41,7 @@ class ReplayDetectionComponent(Component):
         features = np.array(features).reshape((1,2))
         prediction = self.model.predict(features)
         if (prediction[0] > 0.6):
-            highlight.append(Highlight(0, chunk.get_frames_count(), 1))
-
+            highlight.append(Highlight(self.video_offset, self.video_offset +
+                        chunk.get_frames_count(), 1))
+        self.video_offset += chunk.get_frames_count()
         return highlight
