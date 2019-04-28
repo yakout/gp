@@ -46,6 +46,7 @@ class SystemEvaluator:
             - accurracy
             - precision
             - recall
+            - F1
         """
         true_positives = 0
         false_positives = 0
@@ -76,11 +77,13 @@ class SystemEvaluator:
                 false_positives += chunk_positives
             labels_index += 1
 
-        # Computing precision, recall, and accurracy
+        # Computing precision, recall, F1, and accurracy
         precision = (true_positives) / (true_positives + false_positives)
 
         recall = (true_positives) / (true_positives + false_negatives)
 
+        f1 = 2 * ((precision * recall) / (precision + recall))
+
         total = true_negatives + true_positives + false_negatives + false_positives
         accurracy = (true_positives + true_negatives) / (total)
-        return precision, recall, accurracy
+        return accurracy, precision, recall, f1
