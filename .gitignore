@@ -3,7 +3,7 @@
 *.avi
 
 # audio
-*.mp3
+#*.mp3
 
 # runnable python
 *.pyc
@@ -17,8 +17,8 @@ video_processing/config.py
 
 # runtime files
 data.txt
-*.txt
-training_data/*
+#*.txt
+#training_data/*
 
 .vscode
 
