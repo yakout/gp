@@ -27,7 +27,7 @@ class Trainer:
             -  create_model : creates the DL model
             - train : trains the model and save it if needed
             - save_model : save model to disk
-            
+
         Local Dependencies :
             1- DatasetReader from utils.py
 
@@ -38,6 +38,7 @@ class Trainer:
     """
     def __init__(self, dataset_dir):
         self.all_data = self.read_data(dataset_dir)
+        print(self.all_data.shape)
 
     def read_data(self, dataset_dir):
         reader = DatasetReader(dataset_dir)

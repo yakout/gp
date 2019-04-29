@@ -6,9 +6,11 @@ TRAIN_EXT = ".txt"
 
 import numpy as np
 
-# import lk_track as features_extractor
+from features_extractors import FeaturesExtractorComponent
+from motion_features import MotionFeatures
+from frame_difference_features import FrameDifferenceFeatures
+from mean_coloring_features import MeanLUVColoringFeature
 
-from lk_track import FeaturesExtractor
 
 import sys
 sys.path.append("../../../../")
@@ -20,6 +22,13 @@ class DatasetBuilder:
 
     def __init__(self, videos_list):
         self.videos_list = videos_list
+        # Register needed features exctrators
+        FeaturesExtractorComponent.register(MotionFeatures.get_name(),
+                                            MotionFeatures)
+        FeaturesExtractorComponent.register(MeanLUVColoringFeature.get_name(),
+                                            MeanLUVColoringFeature)
+        FeaturesExtractorComponent.register(FrameDifferenceFeatures.get_name(),
+                                            FrameDifferenceFeatures)
 
     def build_dataset(self):
         # process each video
@@ -37,7 +46,7 @@ class DatasetBuilder:
         while vid_reader.has_next():
             chunk = vid_reader.get_next()
             # extract features for this chunks
-            chunk_features = FeaturesExtractor(chunk).run()
+            chunk_features = FeaturesExtractorComponent(chunk).run()
             print("Finished " + str(counter))
             counter += 1
             # append to video_features
@@ -56,6 +65,6 @@ class DatasetBuilder:
         print("Error : no labels file for video name : " + video_name)
 
 if __name__ == '__main__':
-    videos_list = ['liv-cry-4-3']
+    videos_list = ['egy-uru-0-1']
     db = DatasetBuilder(videos_list)
     db.build_dataset()
