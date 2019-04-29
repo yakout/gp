@@ -16,6 +16,7 @@ from __future__ import print_function
 import numpy as np
 import cv2
 import ZeroCrossing as zc
+from numpy import linalg as LA
 
 import sys
 sys.path.append("../../../../")
@@ -44,7 +45,7 @@ class FrameDifferenceFeatures(FeaturesExtractor):
                 df.append(d)
 
             last_frame = frame
-
+            
         return [np.mean(df), zc.getZeroCrossingTheta_pzc(df)]
 
 def main():

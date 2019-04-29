@@ -35,6 +35,7 @@ class DatasetBuilder:
         for video in self.videos_list:
             X = self.build_video_X(video)
             Y = self.build_video_Y(video)
+            print("col stack: " , X.shape, "  " ,Y.shape)
             vidoe_data = np.column_stack((X, Y))
             np.save(TRAIN_DIR + video, vidoe_data)
 
