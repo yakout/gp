@@ -99,7 +99,8 @@ if __name__ == "__main__":
             chunks_length_dict[chunk.get_chunk_position()] = chunk.get_frames_count()
 
     if workers_count > 0:
-        print(colorama.Fore.RED + "Waiting until all workers are done .." + colorama.Style.RESET_ALL)
+        print(colorama.Fore.RED + "Waiting until all workers are done .." +
+              colorama.Style.RESET_ALL)
         # Causes the main thread to wait for the queue to finish processing all the chunks
         chunks_queue.join()
 

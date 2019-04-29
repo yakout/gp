@@ -23,6 +23,7 @@ class SoundComponent(Component):
                          /1.npy
                          /2.npy
     """
+
     def __init__(self):
         self.write_path = './data/'
         self.data_paths_file_name = 'data.txt'
@@ -60,12 +61,13 @@ class SoundComponent(Component):
         if audio.duration < window_size_in_sec:
             return []
 
-        unique_hash            = self._generate_mp3(audio)
-        unique_path            = self.write_path + unique_hash
+        unique_hash = self._generate_mp3(audio)
+        unique_path = self.write_path + unique_hash
         features_output_folder = self.sound_net_output_folder + unique_hash
 
         # TODO: check that int(audio.duration) will not cause any numeric issues
-        self._generate_data_txt(unique_path, int(audio.duration) // window_size_in_sec)
+        self._generate_data_txt(unique_path, int(
+            audio.duration) // window_size_in_sec)
 
         # Extract features
         print("Extracting target data features...")
@@ -85,7 +87,7 @@ class SoundComponent(Component):
         frame_per_sample = window_size_in_sec * chunk.get_fps()
         ret = []
         for i in range(len(probs)):
-            if probs[i][1] > 0.8:
+            if probs[i][1] > 0.6:
                 ret.append(Highlight(start + i * frame_per_sample,
                                      start + (i + 1) * frame_per_sample, probs[i][1]))
         print("Sound Component: highlights length returned: {}".format(len(ret)))
@@ -93,7 +95,7 @@ class SoundComponent(Component):
 
     # generate mp3 using moviepy
     def _generate_mp3(self, audio):
-        n = audio.duration # total duration in seconds
+        n = audio.duration  # total duration in seconds
 
         unique_hash = secrets.token_hex(5)
         unique_path = self.write_path + unique_hash
