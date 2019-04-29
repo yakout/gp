@@ -14,6 +14,11 @@ class SystemEvaluator:
         evaluate(highlights_list)
             computes the accurracy obtained on this video given the
             highlights_list
+
+    Usage Example :
+        system_evaluator = SystemEvaluator("/path/to/video.mp4")
+        accurracy, precision, recall, f1 = system_evaluator.evaluate(highlights_dict)
+
     """
 
     def __init__(self, video_path):

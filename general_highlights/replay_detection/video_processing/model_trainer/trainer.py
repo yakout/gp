@@ -17,6 +17,17 @@ class Trainer:
             3- train the model
             4- Save the model by Pickle
 
+        Attributes :
+            - all_data : all the data for learning available as read from the
+            train_data folder
+
+        Methods :
+            - read_data : reads all_data from train_data folder
+            - partition_dataset : partitions data into train/dev/test splits
+            -  create_model : creates the DL model
+            - train : trains the model and save it if needed
+            - save_model : save model to disk
+            
         Local Dependencies :
             1- DatasetReader from utils.py
 
@@ -42,17 +53,22 @@ class Trainer:
         return X_train, X_dev, X_test, y_train, y_dev, y_test
 
     def create_model(self):
+        # Model Architecture
         model = Sequential()
         model.add(Dense(32, input_shape=(self.all_data.shape[1] - 1,), activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(1, activation='sigmoid'))
+        # Model Config
+        model.compile(optimizer='adam',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
         return model
 
     def save_model(self, model):
         model.save('replay_model.h5')
 
-    def train(self):
+    def train(self, save_model=False):
         print("Dataset Shape : ")
         print((self.all_data.shape))
         # shuffle to remove Dependencies in consective scenes
@@ -61,9 +77,6 @@ class Trainer:
         X_train, X_dev, X_test, y_train, y_dev, y_test = self.partition_dataset()
         # ceate and train model
         model = self.create_model()
-        model.compile(optimizer='adam',
-              loss='binary_crossentropy',
-              metrics=['accuracy'])
         model.fit(X_train, y_train,  validation_data=(X_dev, y_dev), epochs=300)
         print(model.evaluate(X_test, y_test))
         self.save_model(model)

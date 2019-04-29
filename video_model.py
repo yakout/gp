@@ -3,6 +3,12 @@ import os
 class Chunk():
     """
     This class represents a chunk of the video read from disk.
+
+    Attributes :
+        - position : pair denoting the start and end of the chunk w.r.t. video
+        - chunk_clip : a VideoFileClip of the clip represented by the chunk
+        - shift_frames : frames offset from the start of video.
+        - number_of_frames : frames count
     """
 
     def __init__(self, position, chunk_clip, shift_frames, number_of_frames, start=None, end=None):
@@ -45,6 +51,11 @@ class Highlight():
     This class represents a highlight extracted from the video (represented by
     a range), the start and end indices are relative to the chunk the highlight
     is extracted from.
+
+    Attributes:
+        - start_index : start frame of the highlight relative to the chunk
+        - end_index : end frame of the highlight relative to the chunk
+        - score : score denoting importance of the Highlight between 0 and 1
     """
 
     def __init__(self, start_index, end_index, score):
