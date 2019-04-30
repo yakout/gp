@@ -10,6 +10,7 @@ from features_extractors import FeaturesExtractorComponent
 from motion_features import MotionFeatures
 from frame_difference_features import FrameDifferenceFeatures
 from mean_coloring_features import MeanLUVColoringFeature
+from color_ratio_features import ColorRatioFeatures
 
 
 import sys
@@ -29,6 +30,9 @@ class DatasetBuilder:
                                             MeanLUVColoringFeature)
         FeaturesExtractorComponent.register(FrameDifferenceFeatures.get_name(),
                                             FrameDifferenceFeatures)
+        FeaturesExtractorComponent.register(ColorRatioFeatures.get_name(),
+                                            ColorRatioFeatures)
+
 
     def build_dataset(self):
         # process each video

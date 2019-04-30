@@ -23,6 +23,8 @@ from __future__ import print_function
 
 import numpy as np
 import cv2 as cv
+from numpy import linalg as LA
+import ZeroCrossing as zc
 
 import video
 from common import anorm2, draw_str
@@ -60,6 +62,8 @@ class MotionFeatures(FeaturesExtractor):
     def run(self):
         mean_motion_vector = 0
         mean_number_of_tracks = 0
+        dm = []
+        last_frame = None
         for frame in self.chunk.get_clip().iter_frames():
             frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
             motion_vector = 0
@@ -80,6 +84,20 @@ class MotionFeatures(FeaturesExtractor):
                     if(len(tr) > 0):
                         (pX, pY) = tr[-2]
                         motion_vector += (x-pX)*(x-pX) + (y-pY)*(y-pY)
+                        if(not last_frame is None):
+                            diff = []
+                            for i in range(-20,20):
+                                x1 = int(x)+i
+                                x2 = int(pX)+i
+                                if(x1 < 0 or x2 < 0 or x1 >= frame.shape[0] or x2 >= last_frame.shape[0]):
+                                    continue
+                                for j in range(-20,20):
+                                    y1 = int(y)+j
+                                    y2 = int(pY)+j
+                                    if(y1 < 0 or y2 < 0 or y1 >= frame[x1].shape[0] or y2 >= last_frame[x2].shape[0]):
+                                        continue
+                                    diff.append(np.abs(frame[x1,y1]-last_frame[x2,y2]))
+                            dm.append(LA.norm(diff))
 
                     new_tracks.append(tr)
                 self.tracks = new_tracks
@@ -99,9 +117,10 @@ class MotionFeatures(FeaturesExtractor):
 
             self.frame_idx += 1
             self.prev_gray = frame_gray
+            last_frame = frame
 
-
-        return [mean_motion_vector, mean_number_of_tracks]
+        #dm might needs differen thetas in zero_crossing
+        return [mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)]
 
 def main():
     # import sys

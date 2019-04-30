@@ -38,14 +38,13 @@ class FrameDifferenceFeatures(FeaturesExtractor):
         df = []
         last_frame = None
         for frame in self.chunk.get_clip().iter_frames():
-            img = cv2.cvtColor(frame,cv2.COLOR_RGB2Luv)
             if(not last_frame is None):
                 width, height, depth = frame.shape
                 d = LA.norm(cv2.absdiff(last_frame, frame))/(width*height*depth)
                 df.append(d)
 
             last_frame = frame
-            
+
         return [np.mean(df), zc.getZeroCrossingTheta_pzc(df)]
 
 def main():
