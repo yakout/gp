@@ -1,20 +1,29 @@
 from video_processing import VideoChunkReader
+from scenedetector import *
 import config
-from moviepy.editor import *
+# from moviepy.editor import *
 import time
 import cv2
 
-video_name = "Liverpool vs Porto 2 0 Goals and Highlights 2019 HD"
+import moviepy.editor as mpe
+from moviepy.editor import concatenate_videoclips
 
-video_reader = VideoChunkReader(config.INPUT_PATH + video_name + ".mp4", 0)
+
+video_name = "barca - RM  5 - 0"
+
+video_clip = mpe.VideoFileClip(config.INPUT_PATH + video_name + ".mp4")
+bounds = find_scenes(config.INPUT_PATH + video_name + ".mp4")
 
 
 count = 0
 # f = open(config.TRAINNING_OUTPUT_PATH + video_name + ".txt", "w")
 
 shot_length = 0
-while(video_reader.has_next()):
-    chunk = video_reader.get_next()
+last_bound = 0
+
+for bound in bounds:
+    chunk = video_clip.copy().subclip(last_bound, bound).copy()
+    number_of_frames = int(chunk.fps * chunk.duration)
 
     # if(shot_length < 10):
     #     shot_length += chunk.get_clip().duration
@@ -27,8 +36,9 @@ while(video_reader.has_next()):
 
     print("clip count: ", count)
 
-    if(chunk.get_frames_count() >= 2):
-        chunk.get_clip().preview()
+
+    if(number_of_frames >= 2):
+        chunk.preview()
     else:
         type = 0
 
@@ -44,7 +54,7 @@ while(video_reader.has_next()):
 
     time.sleep(.5)
     # f.write(str(type) + "\n")
-
+    last_bound = bound
 
 
 # f.close()
