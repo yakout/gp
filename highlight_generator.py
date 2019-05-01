@@ -37,7 +37,8 @@ class HighlightGenerator(Thread):
         highlghts_dict = {}
         done = False
         while(not done):
-          time.sleep(self.wait_time)
+          if self.wait_time > 0:
+            time.sleep(self.wait_time)
           try:
             highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
             done = True

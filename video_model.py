@@ -22,7 +22,7 @@ class Chunk():
 
     def get_audio(self):
         audio = self.chunk_clip.audio
-        print("audio extracted from chunk_clip: {}".format(audio.duration))
+        # print("audio extracted from chunk_clip: {}".format(audio.duration))
         return audio
 
     def get_chunk_position(self):

@@ -32,6 +32,9 @@ class SoundComponent(Component):
         if not os.path.isdir(self.write_path):
             os.mkdir(self.write_path)
 
+        if not os.path.isdir(self.sound_net_output_folder):
+            os.mkdir(self.sound_net_output_folder)
+
         ComponentContainer.register_component(SoundComponent.get_name(), self)
 
     @staticmethod
@@ -47,7 +50,7 @@ class SoundComponent(Component):
         """
         audio = chunk.get_audio()
         window_size_in_sec = int(self.window_size / 1000)
-        print("audio duration {}".format(audio.duration))
+        # print("audio duration {}".format(audio.duration))
         if audio.duration < window_size_in_sec:
             return []
 
