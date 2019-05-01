@@ -9,7 +9,7 @@ import moviepy.editor as mpe
 from moviepy.editor import concatenate_videoclips
 
 
-video_name = "barca - RM  5 - 0"
+video_name = "Liverpool vs Porto 2 0 Goals and Highlights 2019 HD"
 
 video_clip = mpe.VideoFileClip(config.INPUT_PATH + video_name + ".mp4")
 bounds = find_scenes(config.INPUT_PATH + video_name + ".mp4")
