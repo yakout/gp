@@ -29,6 +29,9 @@ class SoundComponent(Component):
         self.window_size = 6000  # 6 sec window
         self._init_locks()
 
+        if not os.path.isdir(self.write_path):
+            os.mkdir(self.write_path)
+
         ComponentContainer.register_component(SoundComponent.get_name(), self)
 
     @staticmethod
