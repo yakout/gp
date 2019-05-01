@@ -7,6 +7,7 @@ import secrets
 from classifier import AudioClassifier
 from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
+import threading
 
 
 class SoundComponent(Component):
@@ -17,16 +18,16 @@ class SoundComponent(Component):
                        |   /...
                        /data.txt
     Output folder structure for output data produced by SoundNet
-    ./output/:random_hash/mp3/0.mp3
-                       |   /1.mp3
-                       |   /...
-                       /data.txt
+    ./output/:random_hash/0.npy
+                         /1.npy
+                         /2.npy
     """
     def __init__(self):
         self.write_path = './data/'
         self.data_paths_file_name = 'data.txt'
         self.sound_net_output_folder = './output/'
         self.window_size = 6000  # 6 sec window
+        self._init_locks()
 
         ComponentContainer.register_component(SoundComponent.get_name(), self)
 
@@ -64,7 +65,7 @@ class SoundComponent(Component):
         )
 
         # Load model and classify then return list of positives
-        clf = AudioClassifier()
+        clf = AudioClassifier(self.sound_locks['training_lock'])
         probs = clf.predict(features_output_folder)
         #print('Predictions', probs)
 
@@ -93,7 +94,7 @@ class SoundComponent(Component):
         i = 0
 
         while i + window_size_in_sec <= n: # ignore the small trainling sample
-            print("subclip audio file between: {} and {}".format(i, i + window_size_in_sec))
+            # print("subclip audio file between: {} and {}".format(i, i + window_size_in_sec))
             audio.subclip(i, i + window_size_in_sec).write_audiofile(
                 unique_path + '/' + str(i // window_size_in_sec) + ".mp3"
             )
@@ -108,3 +109,7 @@ class SoundComponent(Component):
             if i < n - 1:
                 f.write('\n')
         f.close()
+
+    def _init_locks(self):
+        self.sound_locks = {}
+        self.sound_locks['training_lock'] = threading.Lock()

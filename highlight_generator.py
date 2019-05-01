@@ -4,9 +4,17 @@ from component import Chunk, Component, ComponentContainer
 from highlights_processing import Merger
 import colorama
 import time
+import traceback
+
+import moviepy.editor as mpe
+
 
 class HighlightGenerator(Thread):
-  def __init__(self, queue, all_highlights_dict, component_confidence_map, worker_num):
+  """
+  Note the retry mechanism is only to ensure reliability of workers jst in case
+  unexpected errors that is related to race conditions happened (hopefully not).
+  """
+  def __init__(self, queue, all_highlights_dict, component_confidence_map, worker_num, video_path):
     Thread.__init__(self)
     self.queue = queue
     self.all_highlights_dict = all_highlights_dict
@@ -14,10 +22,13 @@ class HighlightGenerator(Thread):
     self.worker_num = worker_num
     self.retry_count = 10
     self.wait_time = 0 # in seconds
+    self.video_clip = mpe.VideoFileClip(video_path)
 
   def run(self):
     while True:
       chunk = self.queue.get()
+      chunk_clip = self.video_clip.subclip(chunk.start, chunk.end)
+      chunk.chunk_clip = chunk_clip
       try:
         if chunk is None or chunk.chunk_clip is None:
           continue
@@ -31,8 +42,10 @@ class HighlightGenerator(Thread):
             highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
             done = True
             self.wait_time = 0
-          except Exception as e:
-            print(colorama.Fore.GREEN + "Worker {}: error occurred {}".format(self.worker_num, e) + colorama.Style.RESET_ALL)
+            print(colorama.Fore.GREEN + "Worker {}: processing new job done.".format(self.worker_num) + colorama.Style.RESET_ALL)
+          except Exception as _:
+            print(colorama.Fore.GREEN + "Worker {}: recovered from error. stacktrace:\n{}".format(self.worker_num, traceback.format_exc()) + colorama.Style.RESET_ALL)
+            ComponentContainer.errors_count += 1
             self.retry_count -= 1
             self.wait_time = 1 + self.wait_time * 2
             if self.retry_count == 0:

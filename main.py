@@ -7,9 +7,8 @@ import cv2
 import numpy as np
 from numpy import linalg as LA
 import colorama
+import time
 
-
-# from general_highlights.replay_detection import ZeroCrossing as zc
 
 from SoundComponent import SoundComponent
 from video_processing import VideoChunkReader, HighlightsVideoWriter
@@ -64,22 +63,27 @@ if __name__ == "__main__":
     if workers_count > 0:
         print(colorama.Fore.BLUE + "Initializing our slaves .." + colorama.Style.RESET_ALL)
         chunks_queue = Queue()
-        for i in range(workers_count):
-            worker = HighlightGenerator(chunks_queue, all_highlights, component_confidence_map, i)
+        for i in range(1, workers_count + 1):
+            worker = HighlightGenerator(chunks_queue, all_highlights, component_confidence_map, i, video_path)
             worker.daemon = True # Setting daemon to True will let the main thread exit even though the workers are blocking
-            worker.start() # start worker in the background to be ready for consuming chunks once available
+            worker.start()       # Start worker in the background to be ready for consuming chunks once available
             print(colorama.Fore.BLUE + "Worker {} .. done".format(i) + colorama.Style.RESET_ALL)
 
+    highligh_start = time.time()
     # Iterate over all video's chunks and get highlights
     while (video_chunk_reader.has_next()):
-        chunk = video_chunk_reader.get_next()
-        if chunk == None:
-            break
         if workers_count > 0:
+            chunk = video_chunk_reader.get_next(passive=True)
+            if chunk == None:
+                break
             print(colorama.Fore.BLUE + "Approximate Queue size: {}".format(chunks_queue.qsize()) + colorama.Style.RESET_ALL)
             chunks_queue.put(chunk)
         else:
-            # Get highlights list of each component, highlights_dict = {'component_name': List of Highlight}
+            # TODO clean and remove this we don't need it
+            chunk = video_chunk_reader.get_next()
+            if chunk == None:
+                break
+            # Get highlights list of each component, highlights_dict = {'component_name': List of Highlight }
             highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
             all_highlights[chunk.get_chunk_position()] = Merger.merge(
                 highlghts_dict, component_confidence_map)
@@ -89,9 +93,15 @@ if __name__ == "__main__":
         # Causes the main thread to wait for the queue to finish processing all the chunks
         chunks_queue.join()
 
+    highligh_end = time.time()
+
     print(colorama.Fore.GREEN + "All workers are done!" + colorama.Style.RESET_ALL)
+
+    summarizer_start = time.time()
     # summarized_highlights = {'chunk_position': List of Highlight} that is more summarized according to user's duration_limit specified
     summarized_highights = Summarizer.summarize(all_highlights, duration_limit)
+    summarizer_end = time.time()
+
     print("Summarized_highights {}".format(summarized_highights))
     writer = HighlightsVideoWriter(video_path,
                                    "output_" +
@@ -99,4 +109,11 @@ if __name__ == "__main__":
                                    video_chunk_reader.get_video_info(),
                                    VideoChunkReader(video_path, chunk_duration=chunk_duration))
 
+    write_start = time.time()
     writer.write_video(summarized_highights)
+    write_end = time.time()
+    print("============ STATS ============ ")
+    print("Errors count: {} (if the error count is more than 0 please report it to @yakout with the error that appeared in your console".format(ComponentContainer.errors_count))
+    print("Video write time(s): {}".format(write_end - write_start))
+    print("Summarizer time(s): {}".format(summarizer_end - summarizer_start))
+    print("Highlight time(s): {}".format(highligh_end - highligh_start))

@@ -4,6 +4,8 @@ import numpy as np
 import glob
 import pickle  # for model persistence
 import platform  # To check if windows or linux for file paths
+import threading
+
 
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_validate, train_test_split, StratifiedShuffleSplit
@@ -12,22 +14,27 @@ from sklearn.model_selection import cross_validate, train_test_split, Stratified
 class AudioClassifier:
     # pos_path is the path for .npy files that contains positive samples
     # neg_path is the path for .npy files that contains negative samples
-    def __init__(self):
+    def __init__(self, training_lock):
         self.clf = None
         self.features_path = 'training_data/features'
         self.data_path = 'training_data/data'
         self.train_data_path = 'training_data'
+        self.training_lock = training_lock
 
         self.model_file_name = 'svm_model.pickle'
         if os.path.isfile(self.model_file_name):
             print("Model exist, loading ...")
-            self.load()
+            self.load() # load and set the classifier
         else:
-            # for training
-            print("Training the sound model ...")
-            self.extract_features()
-            self.prepare_data()
-            self.fit()
+            # For training
+            # We need to aquire the training lock so only one worker is training
+            # and other workers will be blocked until lock is release i.e training
+            # is done.
+            with self.training_lock:
+                print("Training the sound model ...")
+                self.extract_features()
+                self.prepare_data()
+                self.fit() # train and set the classifier
 
     def extract_features(self):
         print("Extracting features from data ..")
