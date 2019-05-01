@@ -31,10 +31,14 @@ class AudioClassifier:
             # and other workers will be blocked until lock is release i.e training
             # is done.
             with self.training_lock:
-                print("Training the sound model ...")
-                self.extract_features()
-                self.prepare_data()
-                self.fit() # train and set the classifier
+                if os.path.isfile(self.model_file_name):
+                    print("Model exist, loading ...")
+                    self.load() # load and set the classifier
+                else:
+                    print("Training the sound model ...")
+                    self.extract_features()
+                    self.prepare_data()
+                    self.fit() # train and set the classifier
 
     def extract_features(self):
         print("Extracting features from data ..")
