@@ -23,7 +23,7 @@ class VideoChunkReader():
     """
 
     def __init__(self, video_path, chunk_duration=120):
-        self.video_clip = mpe.VideoFileClip(video_path)
+        self.video_clip = mpe.VideoFileClip(video_path, verbose=False)
         self.number_of_frames = int(
             self.video_clip.fps * self.video_clip.duration)
         self.fps = self.video_clip.fps

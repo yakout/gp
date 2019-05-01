@@ -22,7 +22,7 @@ class HighlightGenerator(Thread):
     self.worker_num = worker_num
     self.retry_count = 10
     self.wait_time = 0 # in seconds
-    self.video_clip = mpe.VideoFileClip(video_path)
+    self.video_clip = mpe.VideoFileClip(video_path, verbose=False)
 
   def run(self):
     while True:
