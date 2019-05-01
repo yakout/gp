@@ -27,6 +27,7 @@ class AudioClassifier:
             self.load() # load and set the classifier
         else:
             # For training
+            print("No model exist, Training the sound model ...")
             # We need to aquire the training lock so only one worker is training
             # and other workers will be blocked until lock is release i.e training
             # is done.
@@ -35,7 +36,7 @@ class AudioClassifier:
                     print("Model exist, loading ...")
                     self.load() # load and set the classifier
                 else:
-                    print("Training the sound model ...")
+                    print("No model exist, Training the sound model ...")
                     self.extract_features()
                     self.prepare_data()
                     self.fit() # train and set the classifier

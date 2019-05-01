@@ -109,12 +109,12 @@ class HighlightsVideoWriter():
                 break
             chunk_clip = chunk.get_clip()
             if (chunk_clip is None):
-                print("Chunk clip is None")
+                # print("Chunk clip is None")
                 continue
 
             # If chunk doesn't have any highlights continue
             if chunk.get_chunk_position() not in highlights_dict:
-                print("chunk has no highlight. chunk pos: {}".format(chunk.get_chunk_position()))
+                # print("chunk has no highlight. chunk pos: {}".format(chunk.get_chunk_position()))
                 total_frames_passed += fps * chunk_clip.duration
                 continue
 
@@ -134,15 +134,14 @@ class HighlightsVideoWriter():
                 cut_clip = chunk_clip.subclip(
                     start_frame / fps, end_frame / fps)
 
-                if total_video_clip is not None:
-                    print("total_video__clip duration = {}".format(
-                        total_video_clip.duration))
                 # print("cut_clip duration = {}".format(cut_clip.duration))
 
                 # Concatenate to total video
                 if total_video_clip is None:
                     total_video_clip = cut_clip
                 else:
+                    # print("total_video__clip duration = {}".format(
+                    #     total_video_clip.duration))
                     total_video_clip = concatenate_videoclips(
                         [total_video_clip, cut_clip])
             # Update total frames passsed
