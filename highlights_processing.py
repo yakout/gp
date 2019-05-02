@@ -37,6 +37,12 @@ class Merger():
         current_score = 0
         previous_index = -1
         for point in points:
+            # the point contains three info:
+            # 1. index: start index
+            # 2. type:
+            #       1 for highlight
+            #       0 for not highlight
+            # 3. score: highlight score (component confidence * highlight score)
             index, type, score = point[0], point[1], point[2]
             # print("index {}, type {}, score {}".format(index, type, score))
 
