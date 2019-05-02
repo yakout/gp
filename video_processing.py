@@ -23,7 +23,7 @@ class VideoChunkReader():
     """
 
     def __init__(self, video_path, chunk_duration=120):
-        self.video_clip = mpe.VideoFileClip(video_path)
+        self.video_clip = mpe.VideoFileClip(video_path, verbose=False)
         self.number_of_frames = int(
             self.video_clip.fps * self.video_clip.duration)
         self.fps = self.video_clip.fps
@@ -47,7 +47,7 @@ class VideoChunkReader():
     def has_next(self) -> bool:
         return self.chunk_idx < len(self.scenes) if self.chunk_duration == 0 else self.last_time_read < self.video_clip.duration
 
-    def get_next(self) -> Chunk:
+    def get_next(self, passive=False) -> Chunk:
         """
         Returns next available chunk read, or None if no more chunks are available.
         """
@@ -57,22 +57,30 @@ class VideoChunkReader():
         if (self.chunk_duration != 0):
             start = self.last_time_read
             end = min(self.last_time_read + self.chunk_duration, self.video_clip.duration)
-            chunk_clip = self.video_clip.copy().subclip(start, end).copy()
-            self.last_time_read += chunk_clip.duration
+            if passive:
+                chunk_clip = None
+                self.last_time_read += (end - start)
+            else:
+                chunk_clip = self.video_clip.subclip(start, end)
+                self.last_time_read += chunk_clip.duration
         else:
             # Shot detection
             start = self.scenes[self.chunk_idx][0].get_frames()
             end = self.scenes[self.chunk_idx][1].get_frames()
-            chunk_clip = self.video_clip.subclip(int(start / self.fps), int(end / self.fps))
+            if passive:
+                chunk_clip = None
+            else:
+                chunk_clip = self.video_clip.subclip(int(start / self.fps), int(end / self.fps))
 
         # print("Chunk Duration! {}".format(chunk_clip.duration))
-        number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
+        # number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
+        number_of_frames = int(self.fps * (end - start))
 
         position = (self.offset, self.offset + number_of_frames)
         # print("chunk position {}, captured_frames size {}".format(position, number_of_frames))
         self.offset += number_of_frames
         self.chunk_idx += 1
-        return Chunk(position, chunk_clip, self.offset - number_of_frames, number_of_frames)
+        return Chunk(position, chunk_clip, self.offset - number_of_frames, number_of_frames, start, end) # TODO cleanup the start and end args
 
 
 class HighlightsVideoWriter():
@@ -89,23 +97,24 @@ class HighlightsVideoWriter():
 
         # FPS to read video with
         fps = self.video_chunk_reader.get_fps()
-        print("Video Frames per second = {}".format(fps))
+        # print("Video Frames per second = {}".format(fps))
 
         # Total frames already read
         total_frames_passed = 0
         while (self.video_chunk_reader.has_next()):
-            print("total_frames_passed: {}".format(total_frames_passed))
+            # print("total_frames_passed: {}".format(total_frames_passed))
             # Get next chunk
             chunk = self.video_chunk_reader.get_next()
             if chunk == None:
                 break
             chunk_clip = chunk.get_clip()
             if (chunk_clip is None):
-                print("Chunk clip is None")
+                # print("Chunk clip is None")
+                continue
 
             # If chunk doesn't have any highlights continue
             if chunk.get_chunk_position() not in highlights_dict:
-                print("chunk has no highlight. chunk pos: {}".format(chunk.get_chunk_position()))
+                # print("chunk has no highlight. chunk pos: {}".format(chunk.get_chunk_position()))
                 total_frames_passed += fps * chunk_clip.duration
                 continue
 
@@ -114,8 +123,8 @@ class HighlightsVideoWriter():
             for highlight in highlights:
                 # For each highlight get starting/ending frames of video
                 start_frame, end_frame = highlight.get_highlight_endpoints()
-                print("Chunk Boundaries in frames (absolute) : ",
-                      str(start_frame), str(end_frame))
+                # print("Chunk Boundaries in frames (absolute) : ",
+                #       str(start_frame), str(end_frame))
 
                 # Subtracting total frames passed to make start_frame, end_frame relative to current chunk
                 start_frame -= total_frames_passed
@@ -125,15 +134,14 @@ class HighlightsVideoWriter():
                 cut_clip = chunk_clip.subclip(
                     start_frame / fps, end_frame / fps)
 
-                if total_video_clip is not None:
-                    print("total_video__clip duration = {}".format(
-                        total_video_clip.duration))
-                print("cut_clip duration = {}".format(cut_clip.duration))
+                # print("cut_clip duration = {}".format(cut_clip.duration))
 
                 # Concatenate to total video
                 if total_video_clip is None:
                     total_video_clip = cut_clip
                 else:
+                    # print("total_video__clip duration = {}".format(
+                    #     total_video_clip.duration))
                     total_video_clip = concatenate_videoclips(
                         [total_video_clip, cut_clip])
             # Update total frames passsed

@@ -18,10 +18,11 @@ class Component:
 
 class ComponentContainer:
     """
-        This class is a container for all highlight generator components registered in the system.
-        """
+    This class is a container for all highlight generator components registered in the system.
+    """
 
     components_dict = {}
+    errors_count = 0 # keep track of number of errors for the sake of improving performance
 
     @staticmethod
     def register_component(component_name: str, component: Component):

@@ -1,4 +1,3 @@
-from pydub import AudioSegment
 import os
 
 
@@ -7,11 +6,13 @@ class Chunk():
     This class represents a chunk of the video read from disk.
     """
 
-    def __init__(self, position, chunk_clip, shift_frames, number_of_frames):
+    def __init__(self, position, chunk_clip, shift_frames, number_of_frames, start=None, end=None):
         self.position = position
         self.chunk_clip = chunk_clip
         self.shift_frames = shift_frames
         self.number_of_frames = number_of_frames
+        self.start = start
+        self.end = end
 
     def get_frame(self, index):
         return self.chunk_clip.get_frame((index - self.shift_frames) / self.chunk_clip.fps)
@@ -21,7 +22,7 @@ class Chunk():
 
     def get_audio(self):
         audio = self.chunk_clip.audio
-        print("audio extracted from chunk_clip: {}".format(audio.duration))
+        # print("audio extracted from chunk_clip: {}".format(audio.duration))
         return audio
 
     def get_chunk_position(self):
