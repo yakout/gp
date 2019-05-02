@@ -39,3 +39,5 @@ All .DS_Store files
 data.txt
 data/
 __pycache__/
+.ipynb_checkpoints/
+
