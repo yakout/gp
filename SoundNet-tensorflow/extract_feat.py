@@ -106,9 +106,9 @@ if __name__ == '__main__':
         
         # remove files in output folder to avoid unexpected results
         write_path = os.path.join(args.outpath)
-        print("write path {}".format(write_path))
+        # print("write path {}".format(write_path))
         if os.path.isdir(write_path):
-            print("deleting files in write path {}".format(write_path))
+            # print("deleting files in write path {}".format(write_path))
             shutil.rmtree(write_path)
             os.mkdir(write_path)
 

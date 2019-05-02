@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 
-from video_model import Chunk
-import cv2
-import numpy as np
-from typing import List, Any
-
-import subprocess as sp
 import os
+import cv2
 
+import numpy as np
+import subprocess as sp
 import moviepy.editor as mpe
+
+from typing import List, Any
 from moviepy.editor import concatenate_videoclips
 from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
-
-from scenedetector import *
-
+from video_model import Chunk
+from scenedetector import find_scenes
 
 class VideoChunkReader():
     """

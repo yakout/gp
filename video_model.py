@@ -1,6 +1,5 @@
 import os
 
-
 class Chunk():
     """
     This class represents a chunk of the video read from disk.
@@ -13,6 +12,11 @@ class Chunk():
         self.number_of_frames = number_of_frames
         self.start = start
         self.end = end
+
+    def __str__(self):
+        return "(start: {}, end: {})".format(self.start, self.end)
+
+    __repr__ = __str__
 
     def get_frame(self, index):
         return self.chunk_clip.get_frame((index - self.shift_frames) / self.chunk_clip.fps)
@@ -35,17 +39,23 @@ class Chunk():
         return self.chunk_clip.fps
 
 
+
 class Highlight():
     """
-This class represents a highlight extracted from the video (represented by
+    This class represents a highlight extracted from the video (represented by
     a range), the start and end indices are relative to the chunk the highlight
     is extracted from.
-"""
+    """
 
     def __init__(self, start_index, end_index, score):
         self.start_index = start_index
         self.end_index = end_index
         self.score = score
+
+    def __str__(self):
+        return "(start_index: {}, end_index: {}, score: {})".format(self.start_index, self.end_index, self.score)
+
+    __repr__ = __str__
 
     def set_highlight_endpoints(self, start_index: int, end_index: int):
         self.start_index = start_index

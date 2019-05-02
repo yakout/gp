@@ -1,8 +1,6 @@
 from video_model import Highlight
 
-
 class Merger():
-
     @staticmethod
     def get_points(highlights_dict, component_confidence):
         points = []
@@ -57,12 +55,13 @@ class Merger():
 class Summarizer():
 
     @staticmethod
-    def summarize(chunk_highlights_dict, duration_limit):
+    def summarize(chunk_highlights_dict, duration_limit, fps):
         """
         summarizes the list of highlights for all chunks to the given length
         chunk_highlights_dict : "dict[chunk_position]=list of highlights"
-        duration_limit : "max frames count"
+        duration_limit : "max video length output in minutes"
         """
+        duration_limit = duration_limit * 60 * fps
         highlights = []
         chunkOfHighlight = {}
         for chunk_position, chunk_highlights in chunk_highlights_dict.items():

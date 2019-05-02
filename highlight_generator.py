@@ -32,7 +32,7 @@ class HighlightGenerator(Thread):
       try:
         if chunk is None or chunk.chunk_clip is None:
           continue
-        print(colorama.Fore.GREEN + "Worker {}: processing new job. chunk: {}".format(self.worker_num, chunk.chunk_clip) + colorama.Style.RESET_ALL)
+        print(colorama.Fore.GREEN + "Worker {}: processing new job. chunk: {}".format(self.worker_num, chunk) + colorama.Style.RESET_ALL)
         # Get highlights list of each component, highlights_dict = {'component_name': List of Highlight}
         highlghts_dict = {}
         done = False
