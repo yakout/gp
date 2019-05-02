@@ -63,12 +63,12 @@ class VideoChunkReader():
                 self.last_time_read += chunk_clip.duration
         else:
             # Shot detection
-            start = self.scenes[self.chunk_idx][0].get_frames()
-            end = self.scenes[self.chunk_idx][1].get_frames()
+            start = int(self.scenes[self.chunk_idx][0].get_frames() / self.fps)
+            end = int(self.scenes[self.chunk_idx][1].get_frames() / self.fps)
             if passive:
                 chunk_clip = None
             else:
-                chunk_clip = self.video_clip.subclip(int(start / self.fps), int(end / self.fps))
+                chunk_clip = self.video_clip.subclip(start, end)
 
         # print("Chunk Duration! {}".format(chunk_clip.duration))
         # number_of_frames = int(chunk_clip.fps * chunk_clip.duration)
