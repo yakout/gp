@@ -8,6 +8,7 @@ from classifier import AudioClassifier
 from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
 import threading
+import shutil
 
 
 class SoundComponent(Component):
@@ -29,11 +30,16 @@ class SoundComponent(Component):
         self.window_size = 6000  # 6 sec window
         self._init_locks()
 
-        if not os.path.isdir(self.write_path):
-            os.mkdir(self.write_path)
+        # Clean and delete old data
+        if os.path.isdir(self.write_path):
+            shutil.rmtree(self.write_path)
 
-        if not os.path.isdir(self.sound_net_output_folder):
-            os.mkdir(self.sound_net_output_folder)
+        if os.path.isdir(self.sound_net_output_folder):
+            shutil.rmtree(self.sound_net_output_folder)
+
+        # Creating needed directories
+        os.mkdir(self.write_path)
+        os.mkdir(self.sound_net_output_folder)
 
         ComponentContainer.register_component(SoundComponent.get_name(), self)
 
