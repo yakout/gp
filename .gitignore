@@ -38,3 +38,4 @@ All .DS_Store files
 *.zip
 data.txt
 data/
+__pycache__/
