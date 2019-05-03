@@ -1,13 +1,8 @@
 import os
-import cv2
-
-import numpy as np
-import subprocess as sp
 import moviepy.editor as mpe
 
 from typing import List, Any
 from moviepy.editor import concatenate_videoclips
-from general_highlights.replay_detection.SlowMotionComponent import SlowMotionComponent
 from video_model import Chunk
 from scenedetector import find_scenes
 
@@ -85,11 +80,12 @@ class VideoChunkReader():
 
 
 class HighlightsVideoWriter():
-
-    def __init__(self, video_path, output_path, video_chunk_reader):
-        self.video_path = video_path
+    """
+    This class is responsible for writing the video after generating the
+    highlight, it should take the same reader using for reading the video,
+    """
+    def __init__(self, output_path, video_chunk_reader):
         self.output_path = output_path
-        self.video_info = video_chunk_reader.get_video_info()
         self.video_chunk_reader = video_chunk_reader
         self.video_chunk_reader.reset() # reset reader values
 

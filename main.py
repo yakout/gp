@@ -1,5 +1,4 @@
 import sys
-import cv2
 import numpy as np
 import colorama
 import time
@@ -74,7 +73,7 @@ if __name__ == "__main__":
             worker.start()       # Start worker in the background to be ready for consuming chunks once available
             print(colorama.Fore.BLUE + "Worker {} .. done".format(i) + colorama.Style.RESET_ALL)
 
-    highligh_start = time.time()
+    highlight_start = time.time()
     # Iterate over all video's chunks and get highlights
     while (video_chunk_reader.has_next()):
         if workers_count > 0:
@@ -98,7 +97,7 @@ if __name__ == "__main__":
         # Causes the main thread to wait for the queue to finish processing all the chunks
         chunks_queue.join()
 
-    highligh_end = time.time()
+    highlight_end = time.time()
 
     print(colorama.Fore.GREEN + "All workers are done!" + colorama.Style.RESET_ALL)
 
@@ -108,18 +107,20 @@ if __name__ == "__main__":
     summarizer_end = time.time()
 
     print("Summarized_highights {}".format(summarized_highights))
-    writer = HighlightsVideoWriter(video_path,
-                                   "output_" + str(chunk_duration) + "_secs.mp4",
-                                   video_chunk_reader)
 
     write_start = time.time()
+    writer = HighlightsVideoWriter("output_" + str(chunk_duration) + "_secs.mp4",
+                                   video_chunk_reader)
     writer.write_video(summarized_highights)
     write_end = time.time()
+
     total_time_end = time.time()
+
+    # benchmarking
     print("============ STATS ============ ")
-    print("Errors count: {} ".format(ComponentContainer.errors_count) + colorama.Fore.RED + "(NOTE! If the error count is more than 0 please report it to @yakout with the error that appeared in your console!)" + colorama.Style.RESET_ALL)
-    print("Video write time(s): {}".format(write_end - write_start))
-    print("Summarizer time(s): {}".format(summarizer_end - summarizer_start))
-    print("Highlight generation time(s): {}".format(highligh_end - highligh_start))
-    print("Total time(s): {}".format(total_time_end - total_time_start))
+    print("Errors count: {}".format(ComponentContainer.errors_count) + colorama.Fore.RED + "(NOTE! If the error count is more than 0 please report it to @yakout with the error that appeared in your console!)" + colorama.Style.RESET_ALL)
+    print("Video write time: {} mins".format((write_end - write_start) / 60))
+    print("Summarizer time: {} seconds".format(summarizer_end - summarizer_start))
+    print("Highlight generation time: {} mins".format((highlight_end - highlight_start) / 60))
+    print("Total time: {} mins".format((total_time_end - total_time_start) / 60))
     print("=============================== ")

@@ -5,11 +5,10 @@ import glob
 import pickle  # for model persistence
 import platform  # To check if windows or linux for file paths
 import threading
-
+import time
 
 from sklearn.svm import SVC
-from sklearn.model_selection import cross_validate, train_test_split, StratifiedShuffleSplit
-
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 class AudioClassifier:
     # pos_path is the path for .npy files that contains positive samples
@@ -37,9 +36,12 @@ class AudioClassifier:
                     self.load() # load and set the classifier
                 else:
                     print("No model exist, Training the sound model ...")
+                    start = time.time()
                     self.extract_features()
                     self.prepare_data()
                     self.fit() # train and set the classifier
+                    end = time.time()
+                    print("Sound model training time: {} mins".format((end - start) / 60))
 
     def extract_features(self):
         print("Extracting features from data ..")
@@ -58,7 +60,6 @@ class AudioClassifier:
             self.train_data_path + '/train_data_neg.txt',
             self.features_path + '/neg')
             )
-
 
     # This will read the sample from paths and prepare them to the model to fit.
     def prepare_data(self):
@@ -83,7 +84,7 @@ class AudioClassifier:
 
         X_train, X_test, y_train, y_test = train_test_split(X_all,
                                                             y_all,
-                                                            test_size=0.3,
+                                                            test_size=0.2,
                                                             random_state=42)
         self.X_train = X_train
         self.y_train = y_train
@@ -91,11 +92,29 @@ class AudioClassifier:
         self.y_test = y_test
 
     def fit(self, random_state=0, tol=1e-5, C=0.01):
-        clf = SVC(kernel='linear', random_state=random_state,
-                  tol=tol, C=C, probability=True)
-        clf.fit(self.X_train, self.y_train)
-        self.clf = clf
+        # The Stratified ShuffleSplit cross-validator object is a merge of
+        # StratifiedKFold and ShuffleSplit, which returns stratified randomized
+        # folds.
+        # The folds are made by preserving the percentage of samples for each
+        # class.
+        skf = StratifiedShuffleSplit() # by default n_splits=10
+        best_score = 0
 
+        for train_index, test_index in skf.split(self.X_train, self.y_train):
+            X_train, X_test = self.X_train[train_index], self.X_train[test_index]
+            y_train, y_test = self.y_train[train_index], self.y_train[test_index]
+            clf = SVC(kernel='linear',
+                      random_state=random_state,
+                      tol=tol,
+                      C=C,
+                      probability=True)
+            clf.fit(X_train, y_train)
+            score = clf.score(X_test, y_test)
+            if score > best_score:
+                best_score = score
+                self.clf = clf
+
+        print("cross validation best score: {}".format(best_score))
         print("Model Score: {}".format(clf.score(self.X_test, self.y_test)))
 
         # persist model
