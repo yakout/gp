@@ -105,7 +105,7 @@ class SoundComponent(Component):
         window_size_in_sec = int(self.window_size / 1000)
         i = 0
 
-        while i + window_size_in_sec <= n: # ignore the small trainling sample
+        while i + window_size_in_sec <= n: # ignore the last small training sample
             # print("subclip audio file between: {} and {}".format(i, i + window_size_in_sec))
             audio.subclip(i, i + window_size_in_sec).write_audiofile(
                 unique_path + '/' + str(i // window_size_in_sec) + ".mp3",

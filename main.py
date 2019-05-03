@@ -32,6 +32,7 @@ def init():
 
 if __name__ == "__main__":
     total_time_start = time.time()
+
     # init colorama for windows
     colorama.init()
 
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     all_highlights = {}  # Dict of {'chunk_position': List of Highlight}
 
     if workers_count > 0:
-        print("Initializing our slaves ..")
+        print(colorama.Fore.YELLOW + "Initializing our slaves .." + colorama.Style.RESET_ALL)
         chunks_queue = Queue()
         for i in range(1, workers_count + 1):
             worker = HighlightGenerator(chunks_queue, all_highlights, component_confidence_map, i, video_path)
@@ -108,10 +109,8 @@ if __name__ == "__main__":
 
     print("Summarized_highights {}".format(summarized_highights))
     writer = HighlightsVideoWriter(video_path,
-                                   "output_" +
-                                   str(chunk_duration) + "_secs.mp4",
-                                   video_chunk_reader.get_video_info(),
-                                   VideoChunkReader(video_path, chunk_duration=chunk_duration))
+                                   "output_" + str(chunk_duration) + "_secs.mp4",
+                                   video_chunk_reader)
 
     write_start = time.time()
     writer.write_video(summarized_highights)
