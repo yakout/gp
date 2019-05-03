@@ -39,7 +39,6 @@ class Chunk():
         return self.chunk_clip.fps
 
 
-
 class Highlight():
     """
     This class represents a highlight extracted from the video (represented by

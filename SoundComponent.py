@@ -87,9 +87,9 @@ class SoundComponent(Component):
         frame_per_sample = window_size_in_sec * chunk.get_fps()
         ret = []
         for i in range(len(probs)):
-            if probs[i][1] > 0.9 and (i - 1) >= 0:
-                ret.append(Highlight(start + (i - 1) * frame_per_sample,
-                                     start + (i + 1) * frame_per_sample,
+            if probs[i][1] > 0.85:
+                ret.append(Highlight(start + (i - 2) * frame_per_sample,
+                                     start + (i + 2) * frame_per_sample,
                                      probs[i][1]))
                 continue
 
@@ -99,7 +99,7 @@ class SoundComponent(Component):
         print("Sound Component: highlights length returned: {}".format(len(ret)))
         return ret
 
-    # generate mp3 using moviepy
+    # Generate mp3 using moviepy
     def _generate_mp3(self, audio):
         n = audio.duration # total duration in seconds
 
