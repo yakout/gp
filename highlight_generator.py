@@ -1,13 +1,14 @@
-from queue import Queue
-from threading import Thread
-from component import Chunk, Component, ComponentContainer
-from highlights_processing import Merger
 import colorama
 import time
 import traceback
 
 import moviepy.editor as mpe
 
+from queue import Queue
+from threading import Thread
+
+from component import Chunk, Component, ComponentContainer
+from highlights_processing import Merger
 
 class HighlightGenerator(Thread):
   """
@@ -20,7 +21,7 @@ class HighlightGenerator(Thread):
     self.all_highlights_dict = all_highlights_dict
     self.component_confidence_map = component_confidence_map
     self.worker_num = worker_num
-    self.retry_count = 10
+    self.retry_count = 3
     self.wait_time = 0 # in seconds
     self.video_clip = mpe.VideoFileClip(video_path, verbose=False)
 

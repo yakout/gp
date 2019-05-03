@@ -8,7 +8,7 @@ import threading
 
 
 from sklearn.svm import SVC
-from sklearn.model_selection import cross_validate, train_test_split, StratifiedShuffleSplit
+from sklearn.model_selection import cross_validate, train_test_split, StratifiedKFold
 
 
 class AudioClassifier:
@@ -81,22 +81,36 @@ class AudioClassifier:
         X_all = np.array(X_all)
         y_all = np.array(y_all)
 
-        X_train, X_test, y_train, y_test = train_test_split(X_all,
-                                                            y_all,
-                                                            test_size=0.3,
-                                                            random_state=42)
-        self.X_train = X_train
-        self.y_train = y_train
-        self.X_test = X_test
-        self.y_test = y_test
+        # X_train, X_test, y_train, y_test = train_test_split(X_all,
+        #                                                     y_all,
+        #                                                     test_size=0.3,
+        #                                                     random_state=42)
+        # self.X_train = X_train
+        # self.y_train = y_train
+        # self.X_test = X_test
+        # self.y_test = y_test
+        self.X_train = X_all
+        self.y_train = y_all
 
     def fit(self, random_state=0, tol=1e-5, C=0.01):
-        clf = SVC(kernel='linear', random_state=random_state,
-                  tol=tol, C=C, probability=True)
-        clf.fit(self.X_train, self.y_train)
-        self.clf = clf
+        skf = StratifiedKFold(n_splits=5)
+        best_score = 0
 
-        print("Model Score: {}".format(clf.score(self.X_test, self.y_test)))
+        for train_index, test_index in skf.split(self.X_train, self.y_train):
+            X_train, X_test = self.X_train[train_index], self.X_train[test_index]
+            y_train, y_test = self.y_train[train_index], self.y_train[test_index]
+            clf = SVC(kernel='linear',
+                      random_state=random_state,
+                      tol=tol,
+                      C=C,
+                      probability=True)
+            clf.fit(X_train, y_train)
+            score = clf.score(X_test, y_test)
+            if score > best_score:
+                best_score = score
+                self.clf = clf
+
+        print("Model Score: {}".format(best_score))
 
         # persist model
         with open(self.model_file_name, 'wb') as handle:
