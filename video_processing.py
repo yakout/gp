@@ -78,14 +78,20 @@ class VideoChunkReader():
         self.chunk_idx += 1
         return Chunk(position, chunk_clip, self.offset - number_of_frames, number_of_frames, start, end) # TODO cleanup the start and end args
 
+    def reset(self):
+        self.chunk_idx = 0
+        self.offset = 0
+        self.last_time_read = 0
+
 
 class HighlightsVideoWriter():
 
-    def __init__(self, video_path, output_path, video_info, video_chunk_reader):
+    def __init__(self, video_path, output_path, video_chunk_reader):
         self.video_path = video_path
         self.output_path = output_path
-        self.video_info = video_info
+        self.video_info = video_chunk_reader.get_video_info()
         self.video_chunk_reader = video_chunk_reader
+        self.video_chunk_reader.reset() # reset reader values
 
     def write_video(self, highlights_dict):
         # Object to concatenate all highlight clips in
