@@ -119,8 +119,8 @@ if __name__ == "__main__":
     # benchmarking
     print("============ STATS ============ ")
     print("Errors count: {} ".format(ComponentContainer.errors_count) + colorama.Fore.RED + "(NOTE! If the error count is more than 0 please report it to @yakout with the error that appeared in your console!)" + colorama.Style.RESET_ALL)
-    print("Video write time(s): {}".format(write_end - write_start))
+    print("Video write time(m): {}".format((write_end - write_start) / 60))
     print("Summarizer time(s): {}".format(summarizer_end - summarizer_start))
-    print("Highlight generation time(s): {}".format(highlight_end - highlight_start))
-    print("Total time(s): {}".format(total_time_end - total_time_start))
+    print("Highlight generation time(m): {}".format((highlight_end - highlight_start) / 60))
+    print("Total time(m): {}".format((total_time_end - total_time_start) / 60))
     print("=============================== ")

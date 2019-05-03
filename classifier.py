@@ -81,16 +81,14 @@ class AudioClassifier:
         X_all = np.array(X_all)
         y_all = np.array(y_all)
 
-        # X_train, X_test, y_train, y_test = train_test_split(X_all,
-        #                                                     y_all,
-        #                                                     test_size=0.3,
-        #                                                     random_state=42)
-        # self.X_train = X_train
-        # self.y_train = y_train
-        # self.X_test = X_test
-        # self.y_test = y_test
-        self.X_train = X_all
-        self.y_train = y_all
+        X_train, X_test, y_train, y_test = train_test_split(X_all,
+                                                            y_all,
+                                                            test_size=0.2,
+                                                            random_state=42)
+        self.X_train = X_train
+        self.y_train = y_train
+        self.X_test = X_test
+        self.y_test = y_test
 
     def fit(self, random_state=0, tol=1e-5, C=0.01):
         skf = StratifiedKFold(n_splits=5)
@@ -110,7 +108,8 @@ class AudioClassifier:
                 best_score = score
                 self.clf = clf
 
-        print("Model Score: {}".format(best_score))
+        print("Kfold best score: {}".format(best_score))
+        print("Model Score: {}".format(clf.score(self.X_test, self.y_test)))
 
         # persist model
         with open(self.model_file_name, 'wb') as handle:
