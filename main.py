@@ -72,6 +72,10 @@ if __name__ == "__main__":
             worker.daemon = True # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.start()       # Start worker in the background to be ready for consuming chunks once available
             print(colorama.Fore.BLUE + "Worker {} .. done".format(i) + colorama.Style.RESET_ALL)
+    else:
+        print("Please consider using many workers")
+        print("Our workers are always here to help, they are very loyal, reliable, fast, and effecient :)")
+        print("Usage: python main.py <video> <chunk_duration> <workers num>")
 
     highlight_start = time.time()
     # Iterate over all video's chunks and get highlights

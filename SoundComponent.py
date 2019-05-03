@@ -88,14 +88,17 @@ class SoundComponent(Component):
         ret = []
         for i in range(len(probs)):
             if probs[i][1] > 0.85:
-                ret.append(Highlight(start + (i - 2) * frame_per_sample,
+                print("VIP Highlight, taking surrounding samples "
+                      "(1 backward samples and 1 forward sample) ..")
+                ret.append(Highlight(start + (i - 1) * frame_per_sample,
                                      start + (i + 2) * frame_per_sample,
                                      probs[i][1]))
                 continue
 
             if probs[i][1] > 0.7:
                 ret.append(Highlight(start + i * frame_per_sample,
-                                     start + (i + 1) * frame_per_sample, probs[i][1]))
+                                     start + (i + 1) * frame_per_sample,
+                                     probs[i][1]))
         print("Sound Component: highlights length returned: {}".format(len(ret)))
         return ret
 
