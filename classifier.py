@@ -5,6 +5,7 @@ import glob
 import pickle  # for model persistence
 import platform  # To check if windows or linux for file paths
 import threading
+import time
 
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
@@ -35,9 +36,12 @@ class AudioClassifier:
                     self.load() # load and set the classifier
                 else:
                     print("No model exist, Training the sound model ...")
+                    start = time.time()
                     self.extract_features()
                     self.prepare_data()
                     self.fit() # train and set the classifier
+                    end = time.time()
+                    print("Sound model training time: {} mins".format((end - start) / 60))
 
     def extract_features(self):
         print("Extracting features from data ..")
@@ -110,7 +114,7 @@ class AudioClassifier:
                 best_score = score
                 self.clf = clf
 
-        print("Kfold best score: {}".format(best_score))
+        print("cross validation best score: {}".format(best_score))
         print("Model Score: {}".format(clf.score(self.X_test, self.y_test)))
 
         # persist model
