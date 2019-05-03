@@ -1,14 +1,16 @@
-from abc import ABC, abstractmethod
 import sys
 import shutil
 import time
 import os
 import secrets
+import threading
+import shutil
+
+from abc import ABC, abstractmethod
+
 from classifier import AudioClassifier
 from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
-import threading
-import shutil
 
 
 class SoundComponent(Component):
@@ -85,7 +87,13 @@ class SoundComponent(Component):
         frame_per_sample = window_size_in_sec * chunk.get_fps()
         ret = []
         for i in range(len(probs)):
-            if probs[i][1] > 0.8:
+            if probs[i][1] > 0.9 and (i - 1) >= 0:
+                ret.append(Highlight(start + (i - 1) * frame_per_sample,
+                                     start + (i + 1) * frame_per_sample,
+                                     probs[i][1]))
+                continue
+
+            if probs[i][1] > 0.7:
                 ret.append(Highlight(start + i * frame_per_sample,
                                      start + (i + 1) * frame_per_sample, probs[i][1]))
         print("Sound Component: highlights length returned: {}".format(len(ret)))
