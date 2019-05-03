@@ -15,10 +15,7 @@ video_processing/config.py
 **/__pycache__/
 **/_DS_Store/
 
-# runtime files
 data.txt
-#*.txt
-#training_data/*
 
 .vscode
 
@@ -38,6 +35,4 @@ All .DS_Store files
 *.zip
 data.txt
 data/
-__pycache__/
 .ipynb_checkpoints/
-

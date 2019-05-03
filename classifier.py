@@ -6,10 +6,8 @@ import pickle  # for model persistence
 import platform  # To check if windows or linux for file paths
 import threading
 
-
 from sklearn.svm import SVC
-from sklearn.model_selection import cross_validate, train_test_split, StratifiedKFold
-
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 
 class AudioClassifier:
     # pos_path is the path for .npy files that contains positive samples
@@ -59,7 +57,6 @@ class AudioClassifier:
             self.features_path + '/neg')
             )
 
-
     # This will read the sample from paths and prepare them to the model to fit.
     def prepare_data(self):
         print("Preparing training data ..")
@@ -91,7 +88,12 @@ class AudioClassifier:
         self.y_test = y_test
 
     def fit(self, random_state=0, tol=1e-5, C=0.01):
-        skf = StratifiedKFold(n_splits=5)
+        # The Stratified ShuffleSplit cross-validator object is a merge of
+        # StratifiedKFold and ShuffleSplit, which returns stratified randomized
+        # folds.
+        # The folds are made by preserving the percentage of samples for each
+        # class.
+        skf = StratifiedShuffleSplit() # by default n_splits=10
         best_score = 0
 
         for train_index, test_index in skf.split(self.X_train, self.y_train):
