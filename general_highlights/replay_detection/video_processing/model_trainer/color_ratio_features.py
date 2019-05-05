@@ -64,9 +64,9 @@ class ColorRatioFeatures(FeaturesExtractor):
             counts = sorted(counts)[K-3:]
             width, height, depth = frame.shape
             for i in range(3):
-                means[i] += counts[i]/(width*height*depth)
+                means[i] += counts[i]/(width*height*depth)/self.chunk.get_frames_count()
 
-        return means/self.chunk.get_frames_count()
+        return means
 
 def main():
     # import sys
