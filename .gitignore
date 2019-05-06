@@ -3,7 +3,6 @@
 *.avi
 
 # audio
-#*.mp3
 
 # runnable python
 *.pyc

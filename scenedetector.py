@@ -11,7 +11,7 @@ from scenedetect.stats_manager import StatsManager
 from scenedetect.detectors.content_detector import ContentDetector
 
 
-def find_scenes(video_path):
+def find_scenes(video_path, threshold=30, min_scene_length=15):
     # type: (str) -> List[Tuple[FrameTimecode, FrameTimecode]]
     video_manager = VideoManager([video_path])
     stats_manager = StatsManager()
@@ -20,7 +20,7 @@ def find_scenes(video_path):
 
     # Add ContentDetector algorithm (each detector's constructor
     # takes detector options, e.g. threshold).
-    scene_manager.add_detector(ContentDetector())
+    scene_manager.add_detector(ContentDetector(threshold, min_scene_length))
     base_timecode = video_manager.get_base_timecode()
 
     # We save our stats file to {VIDEO_PATH}.stats.csv.
@@ -65,3 +65,91 @@ def find_scenes(video_path):
         video_manager.release()
 
     return scene_list
+
+
+# from __future__ import division
+#
+# import subprocess
+#
+# def find_scenes(src_video, threshold=0):
+#     """
+#     uses ffprobe to produce a list of shot
+#     boundaries (in seconds)
+#
+#     Args:
+#         src_video (string): the path to the source
+#             video
+#         threshold (float): the minimum value used
+#             by ffprobe to classify a shot boundary
+#
+#     Returns:
+#         List[(float, float)]: a list of tuples of floats
+#         representing predicted shot boundaries (in seconds) and
+#         their associated scores
+#     """
+#     scene_ps = subprocess.Popen(("ffprobe",
+#                                 "-show_frames",
+#                                 "-of",
+#                                 "compact=p=0",
+#                                 "-f",
+#                                 "lavfi",
+#                                 "movie=" + src_video + ",select=gt(scene\," + str(threshold) + ")"),
+#                                 stdout=subprocess.PIPE,
+#                                 stderr=subprocess.STDOUT)
+#     output = scene_ps.stdout.read()
+#     print(type(output))
+#     print(output.decode("utf-8"))
+#     outpu = output.decode("utf-8")
+#     boundaries = extract_boundaries_from_ffprobe_output(output)
+#     print("\n\n\n", len(boundaries))
+#
+#     sd_results = get_shot_predictions(boundaries)
+#
+#     print("\n\n\n", sd_results)
+#     print("\n\n\n", len(sd_results))
+#
+#     # print("\n\n\n", boundaries.shape)
+#     return sd_results
+#
+# def extract_boundaries_from_ffprobe_output(output):
+#     """
+#     extracts the shot boundaries from the string output
+#     producted by ffprobe
+#
+#     Args:
+#         output (string): the full output of the ffprobe
+#             shot detector as a single string
+#
+#     Returns:
+#         List[(float, float)]: a list of tuples of floats
+#         representing predicted shot boundaries (in seconds) and
+#         their associated scores
+#     """
+#     boundaries = []
+#     print(len(output.split("\n".encode())))
+#     for line in output.split("\n".encode())[15:-1]:
+#         print(len(line.split('|'.encode())))
+#         if(len(line.split('|'.encode())) < 5):
+#             continue
+#         boundary = float(line.split('|'.encode())[4].split('='.encode())[-1])
+#         score = float(line.split('|'.encode())[-1].split('='.encode())[-1])
+#         boundaries.append((boundary, score))
+#         # print('boundaries ', boundaries)
+#     return boundaries
+#
+#
+# import csv
+#
+# def get_shot_predictions(boundaries, threshold=0.1):
+#     """
+#
+#     """
+#     results = []
+#     boundaries = sorted(boundaries, key=lambda x: x[1], reverse=True)
+#
+#     for bound, score in boundaries:
+#         if(score >= threshold):
+#             results.append(bound)
+#
+#
+#     return sorted(results)
