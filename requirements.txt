@@ -10,3 +10,4 @@ moviepy==1.0.0
 colorama
 pydub
 pygame
+keras==2.2.4
