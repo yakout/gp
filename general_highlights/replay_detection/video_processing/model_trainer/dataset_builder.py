@@ -30,8 +30,8 @@ class DatasetBuilder:
                                             MeanLUVColoringFeature)
         FeaturesExtractorComponent.register(FrameDifferenceFeatures.get_name(),
                                             FrameDifferenceFeatures)
-        FeaturesExtractorComponent.register(ColorRatioFeatures.get_name(),
-                                            ColorRatioFeatures)
+        # FeaturesExtractorComponent.register(ColorRatioFeatures.get_name(),
+        #                                     ColorRatioFeatures)
 
 
     def build_dataset(self):
@@ -70,8 +70,6 @@ class DatasetBuilder:
         print("Error : no labels file for video name : " + video_name)
 
 if __name__ == '__main__':
-    videos_list = ['barca - bayrn  3 - 0', 'barca - RM  5 - 0', 'fros-roma-2-3',
-                   'Liverpool vs Porto 2 0 Goals and Highlights 2019 HD', 'totnham - city  4 - 3',
-                   'Tottenham vs Ajax 0-1 - Extended Highlights 2019 HD']
+    videos_list = ['Tottenham vs Ajax 0-1 - Extended Highlights 2019 HD']
     db = DatasetBuilder(videos_list)
     db.build_dataset()

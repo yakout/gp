@@ -102,7 +102,6 @@ class MotionFeatures(FeaturesExtractor):
 
                     new_tracks.append(tr)
                 self.tracks = new_tracks
-                print(LA.norm(diff))
                 dm.append(LA.norm(diff))
             mean_number_of_tracks += len(self.tracks)/self.chunk.get_frames_count()
             if self.frame_idx % self.detect_interval == 0:
@@ -122,6 +121,8 @@ class MotionFeatures(FeaturesExtractor):
             last_frame = frame
 
         #TO-DO dm might needs differen thetas in zero_crossing
+        print("motion features finished looping")
+        print([mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)])
         return [mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)]
 
 def main():

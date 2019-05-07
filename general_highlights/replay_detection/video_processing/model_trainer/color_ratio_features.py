@@ -64,16 +64,15 @@ class ColorRatioFeatures(FeaturesExtractor):
     def run(self):
         means = [0,0,0]
         K = 5
-        cnt = 0
         for frame in self.chunk.get_clip().iter_frames():
             counts = self.dominantColors(frame)
             counts = sorted(counts)[K-3:]
             width, height, depth = frame.shape
             for i in range(3):
                 means[i] += counts[i]/(width*height*depth)/self.chunk.get_frames_count()
-            cnt += 1
-            print(cnt)
 
+        print("kmeans color_ratio_features finished looping")
+        print(means)
         return means
 
 def main():
