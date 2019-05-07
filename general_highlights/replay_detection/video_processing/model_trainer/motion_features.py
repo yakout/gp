@@ -25,6 +25,7 @@ import numpy as np
 import cv2 as cv
 from numpy import linalg as LA
 import ZeroCrossing as zc
+import moviepy.editor as mpe
 
 import video
 from common import anorm2, draw_str
@@ -75,6 +76,7 @@ class MotionFeatures(FeaturesExtractor):
                 d = abs(p0-p0r).reshape(-1, 2).max(-1)
                 good = d < 1
                 new_tracks = []
+                diff = []
                 for tr, (x, y), good_flag in zip(self.tracks, p1.reshape(-1, 2), good):
                     if not good_flag:
                         continue
@@ -85,23 +87,23 @@ class MotionFeatures(FeaturesExtractor):
                         (pX, pY) = tr[-2]
                         motion_vector += (x-pX)*(x-pX) + (y-pY)*(y-pY)
                         if(not last_frame is None):
-                            diff = []
-                            for i in range(-20,20):
+                            for i in range(-5,5):
                                 x1 = int(x)+i
                                 x2 = int(pX)+i
                                 if(x1 < 0 or x2 < 0 or x1 >= frame.shape[0] or x2 >= last_frame.shape[0]):
                                     continue
-                                for j in range(-20,20):
+                                for j in range(-5,5):
                                     y1 = int(y)+j
                                     y2 = int(pY)+j
                                     if(y1 < 0 or y2 < 0 or y1 >= frame[x1].shape[0] or y2 >= last_frame[x2].shape[0]):
                                         continue
                                     diff.append(np.abs(frame[x1,y1]-last_frame[x2,y2]))
-                            dm.append(LA.norm(diff))
+
 
                     new_tracks.append(tr)
                 self.tracks = new_tracks
-
+                print(LA.norm(diff))
+                dm.append(LA.norm(diff))
             mean_number_of_tracks += len(self.tracks)/self.chunk.get_frames_count()
             if self.frame_idx % self.detect_interval == 0:
                 mask = np.zeros_like(frame_gray)
@@ -119,7 +121,7 @@ class MotionFeatures(FeaturesExtractor):
             self.prev_gray = frame_gray
             last_frame = frame
 
-        #dm might needs differen thetas in zero_crossing
+        #TO-DO dm might needs differen thetas in zero_crossing
         return [mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)]
 
 def main():
@@ -129,9 +131,9 @@ def main():
 #    except:
 #        video_src = 0
     # sys.path.append("../../../")
-    v1, v2 = MotionFeatures("/home/ahmednagga19/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/liv-cry-4-3.mp4").run()
-    print(v1)
-    print(v2)
+    video_clip = mpe.VideoFileClip("/Users/ahmed/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4", verbose=True)
+    v = MotionFeatures(Chunk(0, video_clip, 100, 100)).run()
+
 
 
 if __name__ == '__main__':

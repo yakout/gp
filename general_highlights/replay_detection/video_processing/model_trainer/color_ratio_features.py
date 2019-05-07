@@ -16,6 +16,7 @@ from __future__ import print_function
 import numpy as np
 import cv2
 from sklearn.mixture import GaussianMixture
+import moviepy.editor as mpe
 
 import sys
 sys.path.append("../../../../")
@@ -43,11 +44,15 @@ class ColorRatioFeatures(FeaturesExtractor):
         Z = np.float32(Z)
 
         #using k-means to cluster pixels
-        # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-        # ret,labels,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
-        gmm = GaussianMixture(n_components = K)
-        gmm.fit(Z)
-        labels = gmm.predict(Z)
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        ret,labels,center=cv2.kmeans(Z,K,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
+        # gmm = GaussianMixture(n_components = K)
+        # gmm.fit(Z)
+        # labels = gmm.predict(Z)
+
+        # center = np.uint8(center)
+        # segImg = center[labels.flatten()].reshape((img.shape))
+        # cv2.imshow('', segImg)
 
         counts = []
         for i in range(K):
@@ -59,12 +64,15 @@ class ColorRatioFeatures(FeaturesExtractor):
     def run(self):
         means = [0,0,0]
         K = 5
+        cnt = 0
         for frame in self.chunk.get_clip().iter_frames():
             counts = self.dominantColors(frame)
             counts = sorted(counts)[K-3:]
             width, height, depth = frame.shape
             for i in range(3):
                 means[i] += counts[i]/(width*height*depth)/self.chunk.get_frames_count()
+            cnt += 1
+            print(cnt)
 
         return means
 
@@ -75,10 +83,11 @@ def main():
 #    except:
 #        video_src = 0
     # sys.path.append("../../../")
-    v = FeaturesExtractor("/home/ahmednagga19/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/liv-cry-4-3.mp4").run()
+    video_clip = mpe.VideoFileClip("/Users/ahmed/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4", verbose=True)
+    v = ColorRatioFeatures(Chunk(0, video_clip, 100, 100)).run()
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
+    cv2.destroyAllWindows()

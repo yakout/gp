@@ -17,6 +17,7 @@ import numpy as np
 import cv2
 import ZeroCrossing as zc
 from numpy import linalg as LA
+import moviepy.editor as mpe
 
 import sys
 sys.path.append("../../../../")
@@ -42,9 +43,11 @@ class FrameDifferenceFeatures(FeaturesExtractor):
                 width, height, depth = frame.shape
                 d = LA.norm(cv2.absdiff(last_frame, frame))/(width*height*depth)
                 df.append(d)
-
+                # print(len(df), " ", d)
             last_frame = frame
 
+        print("finished looping")
+        print([np.mean(df), zc.getZeroCrossingTheta_pzc(df)])
         return [np.mean(df), zc.getZeroCrossingTheta_pzc(df)]
 
 def main():
@@ -54,10 +57,10 @@ def main():
 #    except:
 #        video_src = 0
     # sys.path.append("../../../")
-    v = FeaturesExtractor("/home/ahmednagga19/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/liv-cry-4-3.mp4").run()
+    video_clip = mpe.VideoFileClip("/Users/ahmed/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4", verbose=True)
+    v = FrameDifferenceFeatures(Chunk(0, video_clip, 0, 0)).run()
 
 
 if __name__ == '__main__':
     print(__doc__)
     main()
-    cv.destroyAllWindows()
