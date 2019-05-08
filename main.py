@@ -28,8 +28,8 @@ def init():
     # {: 0.9, 'video': 0.5, }
 
     # registering components
-    # SoundComponent()
-    ReplayDetectionComponent()
+    SoundComponent()
+    # ReplayDetectionComponent()
     # SlowMotionComponent()
 
 
@@ -42,8 +42,8 @@ if __name__ == "__main__":
     # Initialize Components and Components' confidence map
     init()
     component_confidence_map = {
-        # SoundComponent.get_name(): 0.9,
-        ReplayDetectionComponent.get_name(): 1
+        SoundComponent.get_name(): 0.9,
+        # ReplayDetectionComponent.get_name(): 1
         # SlowMotionComponent.get_name() : 0.9
     }
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     # benchmarking
     print("============ STATS ============ ")
     print("Errors count: {}".format(ComponentContainer.errors_count) + colorama.Fore.RED +
-          "(NOTE! If the error count is more than 0 please report it to @yakout with the error that appeared in your console!)" + colorama.Style.RESET_ALL)
+          "\n(NOTE! If the error count is more than 0 please report it to @yakout with the error that appeared in your console!)" + colorama.Style.RESET_ALL)
     print("Video write time: {} mins".format((write_end - write_start) / 60))
     print("Summarizer time: {} seconds".format(
         summarizer_end - summarizer_start))
