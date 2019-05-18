@@ -42,7 +42,7 @@ if __name__ == "__main__":
     # Initialize Components and Components' confidence map
     init()
     component_confidence_map = {
-        SoundComponent.get_name(): 0.9,
+        SoundComponent.get_name(): 1,
         # ReplayDetectionComponent.get_name(): 1
         # SlowMotionComponent.get_name() : 0.9
     }
