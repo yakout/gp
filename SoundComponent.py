@@ -28,7 +28,8 @@ class SoundComponent(Component):
         self.write_path = './data/'
         self.data_paths_file_name = 'data.txt'
         self.sound_net_output_folder = './output/'
-        self.window_size = 6000  # 6 sec window
+        self.window_size_in_sec = 6  # 6 sec window
+        self.prefix_length = 3  # 3 sec prefix for smoothing
         self._init_locks()
 
         # Clean and delete old data
@@ -56,9 +57,8 @@ class SoundComponent(Component):
         :return: list of highlights from given chunk
         """
         audio = chunk.get_audio()
-        window_size_in_sec = int(self.window_size / 1000)
         # print("audio duration {}".format(audio.duration))
-        if audio.duration < window_size_in_sec:
+        if audio.duration < self.window_size_in_sec:
             return []
 
         unique_hash = self._generate_mp3(audio)
@@ -67,7 +67,7 @@ class SoundComponent(Component):
 
         # TODO: check that int(audio.duration) will not cause any numeric issues
         self._generate_data_txt(unique_path, int(
-            audio.duration) // window_size_in_sec)
+            audio.duration) // self.window_size_in_sec)
 
         # Extract features
         print("Extracting target data features...")
@@ -84,11 +84,15 @@ class SoundComponent(Component):
         #print('Predictions', probs)
 
         start = chunk.get_chunk_position()[0]
-        frame_per_sample = window_size_in_sec * chunk.get_fps()
+        frame_per_sample = self.window_size_in_sec * chunk.get_fps()
         ret = []
         for i in range(len(probs)):
             if probs[i][1] > 0.6:
-                ret.append(Highlight(start + i * frame_per_sample,
+                # Add some seconds to the start of the highlight
+                added_highlight_prefix = self.prefix_length * \
+                    chunk.get_fps() if probs[i][1] > 0.8 else 0
+                # Add highlight
+                ret.append(Highlight(start + max(0, i * frame_per_sample - added_highlight_prefix),
                                      start + (i + 1) * frame_per_sample, probs[i][1]))
         print("Sound Component: highlights length returned: {}".format(len(ret)))
         return ret
@@ -104,17 +108,15 @@ class SoundComponent(Component):
             shutil.rmtree(unique_path)
         os.mkdir(unique_path)
 
-        window_size_in_sec = int(self.window_size / 1000)
         i = 0
-
-        while i + window_size_in_sec <= n: # ignore the last small training sample
+        while i + self.window_size_in_sec <= n:  # ignore the last small training sample
             # print("subclip audio file between: {} and {}".format(i, i + window_size_in_sec))
-            audio.subclip(i, i + window_size_in_sec).write_audiofile(
-                unique_path + '/' + str(i // window_size_in_sec) + ".mp3",
+            audio.subclip(i, i + self.window_size_in_sec).write_audiofile(
+                unique_path + '/' + str(i // self.window_size_in_sec) + ".mp3",
                 verbose=False,
                 logger=None
             )
-            i += window_size_in_sec
+            i += self.window_size_in_sec
 
         return unique_hash
 
