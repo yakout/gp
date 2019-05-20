@@ -22,6 +22,8 @@ class Trainer:
         Attributes :
             - all_data : all the data for learning available as read from the
             train_data folder
+            - means : train_data means for normalization on test
+            - do_save_model : boolean to state whether to save the model files after training
 
         Methods :
             - read_data : reads all_data from train_data folder
@@ -38,9 +40,14 @@ class Trainer:
             2- Keras
             3- Pickle
     """
-    def __init__(self, dataset_dir):
+    def __init__(self, dataset_dir, do_save_model=False):
         self.all_data = self.read_data(dataset_dir)
+        self.do_save_model = do_save_model
+        self.means = None
+        self.std = None
         self.preprocess_data()
+        if (self.means is None or self.std is None):
+            print("ERROR : Means still = None")
 
     def read_data(self, dataset_dir):
         reader = DatasetReader(dataset_dir)
@@ -54,14 +61,25 @@ class Trainer:
             self.all_data[i,j] = nan_means[j]
 
     def normalize(self):
-        means = self.all_data.mean(axis=0)
-        std = self.all_data.std(axis=0)
-        self.all_data[:, :-1] -= means[:-1]
-        self.all_data[:, :-1] /= std[:-1]
+        self.means = self.all_data.mean(axis=0)
+        self.std = self.all_data.std(axis=0)
+        self.all_data[:, :-1] -= self.means[:-1]
+        self.all_data[:, :-1] /= self.std[:-1]
+
+    def down_sample_zero_labels(self):
+        labels = self.all_data[:, -1]
+        labels = labels.reshape((labels.shape[0], 1))
+        zero_label_index = np.where(labels == 0)[0]
+        one_label_index = np.where(labels == 1)[0]
+        if (len(zero_label_index) > len(one_label_index)):
+            zero_label_index = zero_label_index[:len(one_label_index) + 1]
+        zero_label_data = self.all_data[zero_label_index]
+        self.all_data = np.vstack((zero_label_data, self.all_data[one_label_index]))
 
     def preprocess_data(self):
         self.fill_nans()
         self.normalize()
+        self.down_sample_zero_labels()
 
     def partition_dataset(self):
         X = self.all_data[:, :-1]
@@ -78,19 +96,19 @@ class Trainer:
         model.add(Dense(128, input_shape=(self.all_data.shape[1] - 1,), activation='relu'))
         model.add(Dropout(0.1))
         model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.3))
-        model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.5))
-        model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.6))
-        model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.6))
-        model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.6))
+        # model.add(Dropout(0.3))
+        # model.add(Dense(128, activation='relu'))
+        # model.add(Dropout(0.5))
+        # model.add(Dense(128, activation='relu'))
+        # model.add(Dropout(0.6))
+        # model.add(Dense(128, activation='relu'))
+        # model.add(Dropout(0.6))
+        # model.add(Dense(128, activation='relu'))
+        model.add(Dropout(0.8))
         model.add(Dense(64, activation='relu'))
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.7))
         model.add(Dense(32, activation='relu'))
-        model.add(Dropout(0.2))
+        # model.add(Dropout(0.2))
         model.add(Dense(1, activation='sigmoid'))
         # Model Config
         model.compile(optimizer=Adam(lr=0.00005),
@@ -100,8 +118,12 @@ class Trainer:
 
     def save_model(self, model):
         model.save('replay_model.h5')
+        np.save('means', self.means)
+        np.save('stds', self.std)
 
-    def train(self, save_model=False):
+
+
+    def train(self):
         print("Dataset Shape : ")
         print((self.all_data.shape))
         # shuffle to remove Dependencies in consective scenes
@@ -112,9 +134,9 @@ class Trainer:
         model = self.create_model()
         model.fit(X_train, y_train,  validation_data=(X_dev, y_dev), epochs=100)
         print(model.evaluate(X_test, y_test))
-        if (save_model):
+        if (self.do_save_model):
             self.save_model(model)
 
 if __name__ == '__main__':
-    trainer = Trainer("./train_data/")
-    trainer.train(save_model=True)
+    trainer = Trainer("./train_data/", do_save_model=True)
+    trainer.train()

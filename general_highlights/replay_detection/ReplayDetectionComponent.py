@@ -12,7 +12,10 @@ sys.path.append("../..")
 from video_model import Highlight, Chunk
 from component import Component, ComponentContainer
 
-model_location = os.getcwd() + "/general_highlights/replay_detection/video_processing/" + "model_trainer/replay_model.h5"
+model_location = os.getcwd() + "/general_highlights/replay_detection/video_processing/" + "model_trainer/"
+model_predictor_location = model_location + "replay_model.h5"
+data_means_location = model_location + "means.npy"
+data_std_location = model_location + "stds.npy"
 
 class ReplayDetectionComponent(Component):
     """
@@ -21,12 +24,16 @@ class ReplayDetectionComponent(Component):
     Attributes:
         - model : DL model to use for classification to whether chunks are considered
         replay or note.
+        - means : train_data means for normalization
+        - stds : train_data stds for normalization
         - video_offset : frames offset in video.
     """
     def __init__ (self):
         self.prepare_features_extractors()
         ComponentContainer.register_component(ReplayDetectionComponent.get_name(), self)
-        self.model = load_model(model_location)
+        self.model = load_model(model_predictor_location)
+        self.means = np.load(data_means_location)
+        self.stds = np.load(data_std_location)
         self.video_offset = 0
 
     @staticmethod
@@ -42,6 +49,23 @@ class ReplayDetectionComponent(Component):
         FeaturesExtractorComponent.register(FrameDifferenceFeatures.get_name(),
                                             FrameDifferenceFeatures)
 
+    def fill_nans(self, data):
+        nan_indices = np.argwhere(np.isnan(data))
+        for nan_index in nan_indices:
+            i, j = nan_index[0], nan_index[1]
+            data[i,j] = self.means[j]
+        return data
+
+    def normalize(self, data):
+        data -= self.means[:-1]
+        data /= self.stds[:-1]
+        return data
+
+    def preprocess_data(self, data):
+        data = self.fill_nans(data)
+        data = self.normalize(data)
+        return data
+
     def get_highlights(self, chunk: Chunk) -> 'List[Highlight]':
         """
         Gets highlights for this video chunk as per this component's perspective.
@@ -50,10 +74,9 @@ class ReplayDetectionComponent(Component):
         """
         highlight = []
         features = FeaturesExtractorComponent(chunk).run()
-        # print("\t\t" + str(np.array(features).shape))
-        features = np.array(features).reshape((1,2))
-        prediction = self.model.predict(features)
-        if (prediction[0] > 0.6):
+        features = np.array(features).reshape((1,len(features)))
+        prediction = self.model.predict(self.preprocess_data(features))
+        if (prediction[0] > 0.5):
             highlight.append(Highlight(self.video_offset, self.video_offset +
                         chunk.get_frames_count(), 1))
         self.video_offset += chunk.get_frames_count()
