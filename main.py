@@ -17,6 +17,8 @@ from general_highlights.replay_detection.ReplayDetectionComponent import ReplayD
 
 from highlight_generator import HighlightGenerator
 
+from system_evaluator import SystemEvaluator
+
 # Deactivating tensorflow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -29,7 +31,7 @@ def init():
 
     # registering components
     SoundComponent()
-    # ReplayDetectionComponent()
+    ReplayDetectionComponent()
     # SlowMotionComponent()
 
 
@@ -43,7 +45,7 @@ if __name__ == "__main__":
     init()
     component_confidence_map = {
         SoundComponent.get_name(): 1,
-        # ReplayDetectionComponent.get_name(): 1
+        ReplayDetectionComponent.get_name(): 0.1
         # SlowMotionComponent.get_name() : 0.9
     }
 
@@ -132,6 +134,11 @@ if __name__ == "__main__":
     write_end = time.time()
 
     total_time_end = time.time()
+    # Evaluation
+    evaluator = SystemEvaluator(video_path)
+    accurracy, precision, recall, f1  = evaluator.evaluate(summarized_highights, chunks_length_dict)
+    print("Evaluation results : accuracy = {}\n precision = {}\n recall = {}\n f1 = {}\n"
+            .format(accurracy, precision, recall, f1))
 
     # benchmarking
     print("============ STATS ============ ")

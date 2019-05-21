@@ -25,6 +25,8 @@ class SystemEvaluator:
         # read labeled ground truth file
         self.scene_labels = None
         self.read_labels_file(video_path)
+        if (self.scene_labels is None):
+            raise Exception("SystemEvaluator : Unable to load labels file")
 
     def read_labels_file(self, video_path):
         labels_file_path = (os.path.splitext(video_path)[0]) + ".ht"
@@ -34,7 +36,7 @@ class SystemEvaluator:
                 video_labels.append(int(line))
             self.scene_labels = video_labels
 
-    def evaluate(self, highlights_dict, chunks_info_dict):
+    def evaluate(self, highlights_dict, chunks_length_dict):
         """
         Evaluates the quality of the given highlights list.
         It counts the percentage of highlights frames based on the ground
@@ -45,7 +47,7 @@ class SystemEvaluator:
 
         Parameters:
             highlights_dict : final dict of Highlight produced by the system.
-            chunks_info_dict : dict containing info for each chunk like chunk length.
+            chunks_length_dict : dict containing each chunk length.
 
         Return:
             - accurracy
@@ -84,7 +86,7 @@ class SystemEvaluator:
 
         # Computing precision, recall, F1, and accurracy
         precision = (true_positives) / (true_positives + false_positives)
-
+        print("false_negatives = {}".format(false_negatives))
         recall = (true_positives) / (true_positives + false_negatives)
 
         f1 = 2 * ((precision * recall) / (precision + recall))

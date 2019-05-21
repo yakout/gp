@@ -46,8 +46,8 @@ class FrameDifferenceFeatures(FeaturesExtractor):
                 # print(len(df), " ", d)
             last_frame = frame
 
-        print("frame difference finished looping")
-        print([np.mean(df), zc.getZeroCrossingTheta_pzc(df)])
+        # print("frame difference finished looping")
+        # print([np.mean(df), zc.getZeroCrossingTheta_pzc(df)])
         return [np.mean(df), zc.getZeroCrossingTheta_pzc(df)]
 
 def main():
