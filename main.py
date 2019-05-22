@@ -116,7 +116,8 @@ if __name__ == "__main__":
     print("Summarized_highights {}".format(summarized_highights))
 
     write_start = time.time()
-    writer = HighlightsVideoWriter("output_" + str(chunk_duration) + "_secs.mp4",
+    output_path = "client/public/output/"
+    writer = HighlightsVideoWriter(output_path + "output_" + str(chunk_duration) + "_secs.mp4",
                                    video_chunk_reader)
     writer.write_video(summarized_highights)
     write_end = time.time()

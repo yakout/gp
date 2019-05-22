@@ -35,3 +35,6 @@ All .DS_Store files
 data.txt
 data/
 .ipynb_checkpoints/
+
+# Dependencies
+/node_modules

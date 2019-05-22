@@ -9,14 +9,21 @@ class VideoDetail extends Component {
     super(props);
 
     this.getTitle = this.getTitle.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
-  getTitle(video_url) {
+  getTitle = video_url => {
     const slashIdx = video_url.lastIndexOf("/");
     return slashIdx === -1
       ? video_url.substring(0, video_url.lastIndexOf("."))
       : video_url.substring(slashIdx + 1, video_url.lastIndexOf("."));
-  }
+  };
+
+  onSubmit = e => {
+    e.preventDefault();
+    console.log("Submitted Here!");
+    this.props.onDetectHighlightsClick();
+  };
 
   render() {
     const { video_url } = this.props;
@@ -32,7 +39,9 @@ class VideoDetail extends Component {
         </div>
         <div className="ui segment">
           <h2 className="ui header">{title}</h2>
-          <button className="ui button">Start Highlight Detection</button>
+          <button className="ui button" onClick={this.onSubmit}>
+            Start Highlight Detection
+          </button>
         </div>
       </div>
     );

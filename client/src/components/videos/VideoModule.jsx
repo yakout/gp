@@ -9,7 +9,10 @@ class VideoModule extends Component {
       <div className="ui grid">
         <div className="ui row">
           <div className="eleven wide column">
-            <VideoDetail video_url={video_url} />
+            <VideoDetail
+              video_url={video_url}
+              onDetectHighlightsClick={this.props.onDetectHighlightsClick}
+            />
           </div>
           {/* <div className="five wide column">
             <VideosList
