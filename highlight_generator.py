@@ -15,10 +15,11 @@ class HighlightGenerator(Thread):
   Note the retry mechanism is only to ensure reliability of workers jst in case
   unexpected errors that is related to race conditions happened (hopefully not).
   """
-  def __init__(self, queue, all_highlights_dict, component_confidence_map, worker_num, video_path):
+  def __init__(self, queue, all_highlights_dict, chunks_length_dict, component_confidence_map, worker_num, video_path):
     Thread.__init__(self)
     self.queue = queue
     self.all_highlights_dict = all_highlights_dict
+    self.chunks_length_dict = chunks_length_dict
     self.component_confidence_map = component_confidence_map
     self.worker_num = worker_num
     self.retry_count = 3
@@ -59,5 +60,6 @@ class HighlightGenerator(Thread):
 
         print(colorama.Fore.GREEN + "Worker {}: highlights found {}".format(self.worker_num, highlghts_dict) + colorama.Style.RESET_ALL)
         self.all_highlights_dict[chunk.get_chunk_position()] = Merger.merge(highlghts_dict, self.component_confidence_map)
+        self.chunks_length_dict[chunk.get_chunk_position()] = chunk.get_frames_count()
       finally:
         self.queue.task_done()

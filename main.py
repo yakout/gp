@@ -79,7 +79,7 @@ if __name__ == "__main__":
         chunks_queue = Queue()
         for i in range(1, workers_count + 1):
             worker = HighlightGenerator(
-                chunks_queue, all_highlights, component_confidence_map, i, video_path)
+                chunks_queue, all_highlights, chunks_length_dict, component_confidence_map, i, video_path)
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
             # Start worker in the background to be ready for consuming chunks once available
@@ -135,6 +135,7 @@ if __name__ == "__main__":
 
     total_time_end = time.time()
     # Evaluation
+    print("============ EVALUATION ============ ")
     evaluator = SystemEvaluator(video_path)
     accurracy, precision, recall, f1  = evaluator.evaluate(summarized_highights, chunks_length_dict)
     print("Evaluation results : accuracy = {}\n precision = {}\n recall = {}\n f1 = {}\n"
