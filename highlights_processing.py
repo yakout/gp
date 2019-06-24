@@ -71,20 +71,21 @@ class Summarizer():
         duration_limit = duration_limit * 60 * fps
         highlights = []
         chunkOfHighlight = {}
+        summarized_highlights = {}
         for chunk_position, chunk_highlights in chunk_highlights_dict.items():
+            summarized_highlights[chunk_position] = []
             for highlight in chunk_highlights:
                 highlights.append(highlight)
                 chunkOfHighlight[highlight] = chunk_position
 
-        summarized_highlights = {}
         highlights = sorted(
             highlights, key=lambda highlight: highlight.score, reverse=True)   # sort by score
         for highlight in highlights:
             start, end = highlight.get_highlight_endpoints()
             if(duration_limit >= end-start+1):
                 chunk_position = chunkOfHighlight[highlight]
-                if chunk_position not in summarized_highlights:
-                    summarized_highlights[chunk_position] = []
+                # if chunk_position not in summarized_highlights:
+                #    summarized_highlights[chunk_position] = []
                 summarized_highlights[chunk_position].append(highlight)
                 duration_limit -= end-start+1
 
