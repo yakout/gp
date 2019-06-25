@@ -58,7 +58,7 @@ class VideoChunkReader():
             # Shot detection
             start = int(self.scenes[self.chunk_idx][0].get_frames() / self.fps)
             end = int(self.scenes[self.chunk_idx][1].get_frames() / self.fps)
-            if passive:
+            if passive: # Don't read the clip, just return it's endpoints
                 chunk_clip = None
             else:
                 chunk_clip = self.video_clip.subclip(start, end)
