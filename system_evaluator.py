@@ -1,4 +1,6 @@
 import os
+
+
 class SystemEvaluator:
     """
     This class servers to evaluate the quality of the produced
@@ -32,7 +34,7 @@ class SystemEvaluator:
         labels_file_path = (os.path.splitext(video_path)[0]) + ".ht"
         video_labels = []
         with open(labels_file_path) as f:
-            for line in f: # read rest of lines
+            for line in f:  # read rest of lines
                 video_labels.append(int(line))
             self.scene_labels = video_labels
 
@@ -74,13 +76,13 @@ class SystemEvaluator:
                 # this chunk is highilight,
                 # considerd frames are TP, ignored are FN
                 false_negatives += (chunks_length_dict[chunk_position]
-                                        - chunk_positives)
+                                    - chunk_positives)
                 true_positives += chunk_positives
             else:
                 # this chunk is NOT highilight,
                 # considerd frames are FP, ignored are TN
                 true_negatives += (chunks_length_dict[chunk_position]
-                                        - chunk_positives)
+                                   - chunk_positives)
                 false_positives += chunk_positives
             labels_index += 1
 
