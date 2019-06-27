@@ -31,10 +31,10 @@ def init():
 
     # registering components
     SoundComponent()
-    #ReplayDetectionComponent()
-    # SlowMotionComponent()
+    # ReplayDetectionComponent()
 
 
+# -----------------------
 if __name__ == "__main__":
     total_time_start = time.time()
 
@@ -45,8 +45,7 @@ if __name__ == "__main__":
     init()
     component_confidence_map = {
         SoundComponent.get_name(): 1,
-        #ReplayDetectionComponent.get_name(): 0.1
-        # SlowMotionComponent.get_name() : 0.9
+        # ReplayDetectionComponent.get_name(): 0.3
     }
 
     # TODO: Add command line input validation checks, add option to use scenes instead of chunk duration(maybe if chunk_duration=0?)
@@ -74,7 +73,7 @@ if __name__ == "__main__":
     chunks_length_dict = {}  # Dict of {'chunk_position' : length in frames}
 
     if workers_count > 0:
-        print(colorama.Fore.YELLOW + "Initializing our slaves .." +
+        print(colorama.Fore.YELLOW + "Initializing our workers .." +
               colorama.Style.RESET_ALL)
         chunks_queue = Queue()
         for i in range(1, workers_count + 1):
@@ -134,12 +133,12 @@ if __name__ == "__main__":
     write_end = time.time()
 
     total_time_end = time.time()
-    # Evaluation
-    print("============ EVALUATION ============ ")
-    evaluator = SystemEvaluator(video_path)
-    accurracy, precision, recall, f1  = evaluator.evaluate(summarized_highights, chunks_length_dict)
-    print("Evaluation results : accuracy = {}\n precision = {}\n recall = {}\n f1 = {}\n"
-            .format(accurracy, precision, recall, f1))
+    # # Evaluation
+    # print("============ EVALUATION ============ ")
+    # evaluator = SystemEvaluator(video_path)
+    # accurracy, precision, recall, f1  = evaluator.evaluate(summarized_highights, chunks_length_dict)
+    # print("Evaluation results : accuracy = {}\n precision = {}\n recall = {}\n f1 = {}\n"
+    #         .format(accurracy, precision, recall, f1))
 
     # benchmarking
     print("============ STATS ============ ")

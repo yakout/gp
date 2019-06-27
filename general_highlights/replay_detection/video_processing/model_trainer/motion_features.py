@@ -63,7 +63,6 @@ class MotionFeatures(FeaturesExtractor):
     def run(self):
         mean_motion_vector = 0
         mean_number_of_tracks = 0
-        dm = []
         last_frame = None
         for frame in self.chunk.get_clip().iter_frames():
             frame_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -83,26 +82,9 @@ class MotionFeatures(FeaturesExtractor):
                     tr.append((x, y))
                     if len(tr) > self.track_len:
                         del tr[0]
-                    if(len(tr) > 0):
-                        (pX, pY) = tr[-2]
-                        motion_vector += (x-pX)*(x-pX) + (y-pY)*(y-pY)
-                        if(not last_frame is None):
-                            for i in range(-5,5):
-                                x1 = int(x)+i
-                                x2 = int(pX)+i
-                                if(x1 < 0 or x2 < 0 or x1 >= frame.shape[0] or x2 >= last_frame.shape[0]):
-                                    continue
-                                for j in range(-5,5):
-                                    y1 = int(y)+j
-                                    y2 = int(pY)+j
-                                    if(y1 < 0 or y2 < 0 or y1 >= frame[x1].shape[0] or y2 >= last_frame[x2].shape[0]):
-                                        continue
-                                    diff.append(np.abs(frame[x1,y1]-last_frame[x2,y2]))
-
 
                     new_tracks.append(tr)
                 self.tracks = new_tracks
-                dm.append(LA.norm(diff))
             mean_number_of_tracks += len(self.tracks)/self.chunk.get_frames_count()
             if self.frame_idx % self.detect_interval == 0:
                 mask = np.zeros_like(frame_gray)
@@ -123,7 +105,7 @@ class MotionFeatures(FeaturesExtractor):
         #TO-DO dm might needs differen thetas in zero_crossing
         # print("motion features finished looping")
         # print([mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)])
-        return [mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)]
+        return [mean_motion_vector, mean_number_of_tracks, 0, 0]
 
 def main():
     # import sys

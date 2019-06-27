@@ -30,8 +30,8 @@ class DatasetBuilder:
                                             MeanLUVColoringFeature)
         FeaturesExtractorComponent.register(FrameDifferenceFeatures.get_name(),
                                             FrameDifferenceFeatures)
-        # FeaturesExtractorComponent.register(ColorRatioFeatures.get_name(),
-        #                                     ColorRatioFeatures)
+        FeaturesExtractorComponent.register(ColorRatioFeatures.get_name(),
+                                            ColorRatioFeatures)
 
 
     def build_dataset(self):

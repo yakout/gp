@@ -86,8 +86,8 @@ class AudioClassifier:
                                                             y_all,
                                                             test_size=0.2,
                                                             random_state=42)
-        self.X_train = X_train
-        self.y_train = y_train
+        self.X_train = X_all
+        self.y_train = y_all
         self.X_test = X_test
         self.y_test = y_test
 

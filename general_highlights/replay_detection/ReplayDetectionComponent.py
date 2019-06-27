@@ -77,7 +77,7 @@ class ReplayDetectionComponent(Component):
         features = np.array(features).reshape((1,len(features)))
         prediction = self.model.predict(self.preprocess_data(features))
         print("prediction = {}".format(prediction))
-        if (prediction[0] > 0.54):
+        if (prediction[0] > 0.30):
             highlight.append(Highlight(self.video_offset, self.video_offset +
                         chunk.get_frames_count(), 1))
         self.video_offset += chunk.get_frames_count()
