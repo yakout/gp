@@ -10,6 +10,10 @@ from threading import Thread
 from component import Chunk, Component, ComponentContainer
 from highlights_processing import Merger
 
+# WebSocket Server imports
+from flask import Flask
+from flask_socketio import SocketIO, emit
+
 class HighlightGenerator(Thread):
   """
   Note the retry mechanism is only to ensure reliability of workers jst in case
@@ -59,5 +63,6 @@ class HighlightGenerator(Thread):
 
         print(colorama.Fore.GREEN + "Worker {}: highlights found {}".format(self.worker_num, highlghts_dict) + colorama.Style.RESET_ALL)
         self.all_highlights_dict[chunk.get_chunk_position()] = Merger.merge(highlghts_dict, self.component_confidence_map)
+        emit(chunk.get_chunk_position())
       finally:
         self.queue.task_done()
