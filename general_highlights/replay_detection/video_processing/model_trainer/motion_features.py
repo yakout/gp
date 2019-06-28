@@ -36,6 +36,7 @@ sys.path.append("../../../../")
 from features_extractors import FeaturesExtractor
 from video_model import Chunk
 from video_processing import VideoChunkReader
+import matplotlib.pyplot as plt
 
 lk_params = dict( winSize  = (15, 15),
                   maxLevel = 2,
@@ -63,6 +64,8 @@ class MotionFeatures(FeaturesExtractor):
     def run(self):
         mean_motion_vector = 0
         mean_number_of_tracks = 0
+        motion_vectors = []
+        number_of_tracks = []
         dm = []
         last_frame = None
         for frame in self.chunk.get_clip().iter_frames():
@@ -104,6 +107,7 @@ class MotionFeatures(FeaturesExtractor):
                 self.tracks = new_tracks
                 dm.append(LA.norm(diff))
             mean_number_of_tracks += len(self.tracks)/self.chunk.get_frames_count()
+            number_of_tracks.append(len(self.tracks))
             if self.frame_idx % self.detect_interval == 0:
                 mask = np.zeros_like(frame_gray)
                 mask[:] = 255
@@ -115,14 +119,18 @@ class MotionFeatures(FeaturesExtractor):
                         self.tracks.append([(x, y)])
 
             mean_motion_vector += motion_vector/self.chunk.get_frames_count()
+            motion_vectors.append(motion_vector)
 
             self.frame_idx += 1
             self.prev_gray = frame_gray
             last_frame = frame
 
+
         #TO-DO dm might needs differen thetas in zero_crossing
         # print("motion features finished looping")
         # print([mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)])
+
+    
         return [mean_motion_vector, mean_number_of_tracks, np.mean(dm), zc.getZeroCrossingTheta_pzc(dm)]
 
 def main():

@@ -103,7 +103,7 @@ def main():
 #    except:
 #        video_src = 0
     sys.path.append("../")
-    App("/Users/ahmed/Desktop/GP/gp/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4").run()
+    App("/Users/ahmed/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4").run()
     print('Done')
 
 
