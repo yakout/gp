@@ -12,18 +12,18 @@ def getZeroCrossingTheta_pzc(d):
     # print(len(THETAS))
     normalized_d = (d-np.mean(d))/np.std(d)
     # print(d, "\n")
-    print(normalized_d, "\n\n")
-    print("mean normalized d zerocrossing ", np.mean(normalized_d))
+    # print(normalized_d, "\n\n")
+    # print("mean normalized d zerocrossing ", np.mean(normalized_d))
 
     c1 = plt.plot(normalized_d, color='g')
 
     c2 = 0
-    for theta in THETAS:
-        c2 = plt.plot(np.mean(normalized_d)-theta, color='r', linestyle='dashed')
-        plt.plot(np.mean(normalized_d)+theta, color='r', linestyle='dashed')
-
-    # plt.legend([c1, c2], ['Diff', 'theta'])
-    plt.show()
+    # for theta in THETAS:
+    #     c2 = plt.plot(np.mean(normalized_d)-theta, color='r', linestyle='dashed')
+    #     plt.plot(np.mean(normalized_d)+theta, color='r', linestyle='dashed')
+    #
+    # # plt.legend([c1, c2], ['Diff', 'theta'])
+    # plt.show()
     # plt.show()
     # print('zero crossing mean',np.mean(d))
 

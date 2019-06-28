@@ -30,8 +30,8 @@ def init():
     # {: 0.9, 'video': 0.5, }
 
     # registering components
-    SoundComponent()
-    #ReplayDetectionComponent()
+    # SoundComponent()
+    ReplayDetectionComponent()
     # SlowMotionComponent()
 
 
@@ -44,8 +44,8 @@ if __name__ == "__main__":
     # Initialize Components and Components' confidence map
     init()
     component_confidence_map = {
-        SoundComponent.get_name(): 1,
-        #ReplayDetectionComponent.get_name(): 0.1
+        # SoundComponent.get_name(): 1,
+        ReplayDetectionComponent.get_name(): 1
         # SlowMotionComponent.get_name() : 0.9
     }
 

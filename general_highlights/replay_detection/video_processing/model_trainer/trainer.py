@@ -132,7 +132,7 @@ class Trainer:
         X_train, X_dev, X_test, y_train, y_dev, y_test = self.partition_dataset()
         # ceate and train model
         model = self.create_model()
-        model.fit(X_train, y_train,  validation_data=(X_dev, y_dev), epochs=100)
+        model.fit(X_train, y_train,  validation_data=(X_dev, y_dev), epochs=500)
         print(model.evaluate(X_test, y_test))
         if (self.do_save_model):
             self.save_model(model)
