@@ -18,6 +18,7 @@ import cv2
 import ZeroCrossing as zc
 from numpy import linalg as LA
 import moviepy.editor as mpe
+import matplotlib.pyplot as plt
 
 import sys
 sys.path.append("../../../../")
@@ -37,15 +38,31 @@ class FrameDifferenceFeatures(FeaturesExtractor):
 
     def run(self):
         df = []
+        pzc = [-1]
         last_frame = None
         for frame in self.chunk.get_clip().iter_frames():
             if(not last_frame is None):
                 width, height, depth = frame.shape
                 d = LA.norm(cv2.absdiff(last_frame, frame))/(width*height*depth)
                 df.append(d)
+                # if(len(df) > 800):
+                #     pzc.append(zc.getZeroCrossingTheta_pzc(df[-800:-1]))
                 # print(len(df), " ", d)
+            # cv2.imshow('match', frame)
+            # ch = cv2.waitKey(1)
+            # if ch == 27:
+            #     break
             last_frame = frame
+        # cv2.destroyAllWindows()
+        # standarized_df = (df-np.mean(df)) / np.std(df)
+        # plt.plot(standarized_df)
+        # for theta in zc.THETAS:
+        #     plt.plot([np.mean(standarized_df)-theta for i in range(len(df))], color='red', linestyle='dashed', linewidth = .5)
+        #     plt.plot([np.mean(standarized_df)+theta for i in range(len(df))], color='red', linestyle='dashed', linewidth = .5)
 
+        # plt.show()
+        # plt.plot(pzc)
+        # plt.show()
         # print("frame difference finished looping")
         # print([np.mean(df), zc.getZeroCrossingTheta_pzc(df)])
         return [np.mean(df), zc.getZeroCrossingTheta_pzc(df)]

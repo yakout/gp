@@ -23,6 +23,8 @@ from video_model import Chunk
 from video_processing import VideoChunkReader
 
 from features_extractors import FeaturesExtractor
+import moviepy.editor as mpe
+import matplotlib.pyplot as plt
 
 class MeanLUVColoringFeature(FeaturesExtractor):
 
@@ -35,9 +37,13 @@ class MeanLUVColoringFeature(FeaturesExtractor):
 
     def run(self):
         mean_LUV_coloring = np.zeros(3)
+        LUV_coloring = []
         for frame in self.chunk.get_clip().iter_frames():
             img = cv2.cvtColor(frame,cv2.COLOR_RGB2Luv)
             #Adding mean of cur frame to global LUV mean
+
+
+            LUV_coloring.append(np.mean(img, axis=(0,1)))
             mean_LUV_coloring += np.mean(img, axis=(0,1))/self.chunk.get_frames_count()
 
         return mean_LUV_coloring.tolist()
@@ -49,8 +55,8 @@ def main():
 #    except:
 #        video_src = 0
     # sys.path.append("../../../")
-    v = FeaturesExtractor("/home/ahmednagga19/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/liv-cry-4-3.mp4").run()
-
+    video_clip = mpe.VideoFileClip("/Users/ahmed/Desktop/GP/gp/general_highlights/replay_detection/video_processing/videos/Liverpool vs Porto 2 0 Goals and Highlights 2019 HD.mp4", verbose=True)
+    v = MeanLUVColoringFeature(Chunk(0, video_clip, 0, 0)).run()
 
 if __name__ == '__main__':
     print(__doc__)
