@@ -13,7 +13,8 @@ class App extends Component {
     this.state = {
       videos: [], // List of highlight videos (or ranges from the original video) returned from api call to display in a table
       video_url: null, // Current video being displayed
-      processing: false // Flag to indicate if system is currently processing a game
+      processing: false, // Flag to indicate if system is currently processing a game
+      reel_ready: false
     };
   }
 
@@ -23,7 +24,7 @@ class App extends Component {
     const { endpoint } = this.state;
     socket.on("receive_highlights", data => this.setState({ videos: [...this.state.videos, data] }));
     socket.on("receive_highlight_reel", res => {
-      this.setState({ processing: false,  video_url: res});
+      this.setState({ processing: false, reel_ready:true, video_url: res});
     })
   }
 
@@ -49,9 +50,9 @@ class App extends Component {
   };
 
   render() {
-    const { processing, videos, video_url } = this.state;
-    console.log(videos);
-    console.log(video_url);
+    const { processing, videos, video_url, reel_ready } = this.state;
+    // console.log(videos);
+    // console.log(video_url);
     return (
       <div className="app ui container">
         <SearchBar onSearchSubmit={this.onSearchSubmit} />
@@ -62,6 +63,7 @@ class App extends Component {
         />
 
         {processing ? <h2>Currently Processing...</h2> : <div />}
+        {!processing && reel_ready ? <h2>Highlight Reel is ready!</h2> : <div />}
       </div>
     );
   }

@@ -83,11 +83,12 @@ def generate(json):
 
     print("Summarized_highights {}".format(summarized_highights))
 
-    output_path = "client/public/output/"
-    video_output_path = output_path + "output_" + str(chunk_duration) + "_secs.mp4"
+    public_folder_path = "client/public/"
+    output_folder_path = "output/"
+    video_output_path = public_folder_path + output_folder_path + "output_" + str(chunk_duration) + "_secs.mp4"
     writer = HighlightsVideoWriter(video_output_path, video_chunk_reader)
     writer.write_video(summarized_highights)
-    emit('receive_highlight_reel', video_output_path)
+    emit('receive_highlight_reel', output_folder_path + "output_" + str(chunk_duration) + "_secs.mp4")
 
 
 if __name__ == "__main__":

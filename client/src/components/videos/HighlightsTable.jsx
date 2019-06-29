@@ -4,19 +4,26 @@ import BootstrapTable from "react-bootstrap-table-next";
 class HighlightsTable extends Component {
   constructor(props) {
     super(props);
+
+    this.getTimeInSeconds = this.getTimeInSeconds.bind(this);
   }
 
+  getTimeInSeconds = time => {
+    const arr = time.split(":");
+    var totalTime = 0;
+    totalTime += 3600 * parseInt(arr[0]);
+    totalTime += 60 * parseInt(arr[1]);
+    totalTime += parseInt(arr[2]);
+    return totalTime;
+  };
+
   play(row) {
-    console.log(row);
+    this.props.onPlayHighlightClick(this.getTimeInSeconds(row[0]), this.getTimeInSeconds(row[1]));
   }
 
   playFormatter(cell, row, rowIndex, formatExtraData) {
     return (
-      <button
-        onClick={() => formatExtraData.src.play(row)}
-      >
-        <i className="play circle icon"></i>
-      </button>
+        <i className="play circle icon" onClick={() => formatExtraData.src.play(row)}></i>
     );
   }
 
