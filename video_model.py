@@ -44,6 +44,9 @@ class Chunk():
     def get_fps(self):
         return self.chunk_clip.fps
 
+    def get_chunk_info(self):
+        return (self.start, self.end, self.score)
+
 
 
 class Highlight():

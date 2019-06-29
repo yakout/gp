@@ -26,5 +26,8 @@
   "devDependencies": {
     "concurrently": "^4.1.0",
     "nodemon": "^1.18.11"
+  },
+  "dependencies": {
+    "react-bootstrap-table-next": "^3.1.5"
   }
 }

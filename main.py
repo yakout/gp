@@ -3,6 +3,7 @@ import numpy as np
 import colorama
 import time
 import os
+import datetime
 
 from queue import Queue
 from numpy import linalg as LA
@@ -44,7 +45,7 @@ def init():
 
 @app.route('/')
 def serve_static_index():
-    return 'Hello word'
+    return 'Hello world'
 
 @socketio.on('generate_highlights')
 def generate(json):
@@ -67,7 +68,12 @@ def generate(json):
         highlghts_dict = ComponentContainer.get_chunk_highlights(chunk)
         all_highlights[chunk.get_chunk_position()] = Merger.merge(
             highlghts_dict, component_confidence_map)
-        emit(chunk.get_chunk_position())
+        for highlight in all_highlights[chunk.get_chunk_position()]:
+            endpoints = highlight.get_highlight_endpoints()
+            endpoints_sec = [x / video_chunk_reader.get_fps() for x in endpoints]
+            start_time = str(datetime.timedelta(seconds=endpoints_sec[0]))
+            end_time = str(datetime.timedelta(seconds=endpoints_sec[1]))
+            emit('receive_highlights', [start_time, end_time, highlight.get_score()])
         chunks_length_dict[chunk.get_chunk_position()
                             ] = chunk.get_frames_count()
 
@@ -78,9 +84,10 @@ def generate(json):
     print("Summarized_highights {}".format(summarized_highights))
 
     output_path = "client/public/output/"
-    writer = HighlightsVideoWriter(output_path + "output_" + str(chunk_duration)
-                                               + "_secs.mp4", video_chunk_reader)
+    video_output_path = output_path + "output_" + str(chunk_duration) + "_secs.mp4"
+    writer = HighlightsVideoWriter(video_output_path, video_chunk_reader)
     writer.write_video(summarized_highights)
+    emit('receive_highlight_reel', video_output_path)
 
 
 if __name__ == "__main__":

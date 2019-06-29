@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import VideoDetail from "./components/VideoDetail";
 import VideosList from "./components/VideosList";
+import HighlightsTable from "./HighlightsTable";
 
 class VideoModule extends Component {
   render() {
-    const { video_url } = this.props.appState;
+    const { video_url, videos } = this.props.appState;
     return (
       <div className="ui grid">
         <div className="ui row">
@@ -14,12 +15,9 @@ class VideoModule extends Component {
               onDetectHighlightsClick={this.props.onDetectHighlightsClick}
             />
           </div>
-          {/* <div className="five wide column">
-            <VideosList
-              videos={this.props.appState.videos}
-              onVideoSelect={this.props.onVideoSelect}
-            />
-          </div> */}
+          <div className="five wide column">
+            <HighlightsTable videos={videos}/>
+          </div>
         </div>
       </div>
     );
