@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
 
 class HighlightsTable extends Component {
   constructor(props) {
     super(props);
-
+    this.currentSize = 10;
+    this.currentPage = 1;
     this.getTimeInSeconds = this.getTimeInSeconds.bind(this);
   }
 
@@ -53,6 +55,15 @@ class HighlightsTable extends Component {
     }
   ];
 
+  options = {
+    onPageChange: page => {
+      this.currentPage = page;
+    },
+    onSizePerPageChange: sizePerPage => {
+      this.currentSize = sizePerPage;
+    }
+  };
+
   render() {
     console.log(this.props.videos);
     return (
@@ -65,7 +76,7 @@ class HighlightsTable extends Component {
               condensed
               bordered={false}
               condensed
-              // pagination={paginationFactory(this.options)}
+              pagination={paginationFactory(this.options)}
               // filter={filterFactory()}
             />
       </div>
