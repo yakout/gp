@@ -30,7 +30,7 @@ def init():
     # {: 0.9, 'video': 0.5, }
 
     # registering components
-    # SoundComponent()
+    SoundComponent()
     ReplayDetectionComponent()
     # SlowMotionComponent()
 
@@ -44,9 +44,8 @@ if __name__ == "__main__":
     # Initialize Components and Components' confidence map
     init()
     component_confidence_map = {
-        # SoundComponent.get_name(): 1,
+        SoundComponent.get_name(): 1,
         ReplayDetectionComponent.get_name(): 1
-        # SlowMotionComponent.get_name() : 0.9
     }
 
     # TODO: Add command line input validation checks, add option to use scenes instead of chunk duration(maybe if chunk_duration=0?)

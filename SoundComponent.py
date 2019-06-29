@@ -29,7 +29,7 @@ class SoundComponent(Component):
         self.data_paths_file_name = 'data.txt'
         self.sound_net_output_folder = './output/'
         self.window_size_in_sec = 6  # 6 sec window
-        self.prefix_length = 3  # 3 sec prefix for smoothing
+        self.prefix_length = 6  # 3 sec prefix for smoothing
         self._init_locks()
 
         # Clean and delete old data
@@ -90,7 +90,7 @@ class SoundComponent(Component):
             if probs[i][1] > 0.6:
                 # Add some seconds to the start of the highlight
                 added_highlight_prefix = self.prefix_length * \
-                    chunk.get_fps() if probs[i][1] > 0.8 else 0
+                    chunk.get_fps() if probs[i][1] > 0.5 else 0
                 # Add highlight
                 ret.append(Highlight(start + max(0, i * frame_per_sample - added_highlight_prefix),
                                      start + (i + 1) * frame_per_sample, probs[i][1]))
